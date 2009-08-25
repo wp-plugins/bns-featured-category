@@ -55,5 +55,8 @@ n/a
 
 == Changelog ==
 
+= 1.0.1 =
+* (minor) changed display "Categories" in option panel to "Category IDs" for more clarity 
+
 = 1.0 =
 * Initial Release.

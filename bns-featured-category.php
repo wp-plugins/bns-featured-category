@@ -3,7 +3,7 @@
 Plugin Name: BNS Featured Category
 Plugin URI: http://buynowshop.com/
 Description: Plugin with multi-widget functionality that displays most recent posts from specific category or categories (set with user options). Also includes user options to display: Author and meta details; comment totals; post categories; post tags; and either full post or excerpt (or any combination).  
-Version: 1.0
+Version: 1.0.1
 Author: Edward Caissie
 Author URI: http://edwardcaissie.com/
 */
@@ -126,7 +126,7 @@ function form( $instance ) {
 		</p>
 
 		<p>
-			<label for="<?php echo $this->get_field_id( 'cat_choice' ); ?>"><?php _e('Categories, separated by commas:'); ?></label>
+			<label for="<?php echo $this->get_field_id( 'cat_choice' ); ?>"><?php _e('Category IDs, separated by commas:'); ?></label>
 			<input id="<?php echo $this->get_field_id( 'cat_choice' ); ?>" name="<?php echo $this->get_field_name( 'cat_choice' ); ?>" value="<?php echo $instance['cat_choice']; ?>" style="width:100%;" />
 		</p>
 
