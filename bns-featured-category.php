@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: BNS Featured Category
-Plugin URI: http://buynowshop.com/
+Plugin URI: http://buynowshop.com/plugins/bns-featured-category/
 Description: Plugin with multi-widget functionality that displays most recent posts from specific category or categories (set with user options). Also includes user options to display: Author and meta details; comment totals; post categories; post tags; and either full post or excerpt (or any combination).  
-Version: 1.0.1
+Version: 1.1
 Author: Edward Caissie
 Author URI: http://edwardcaissie.com/
 */
@@ -40,6 +40,7 @@ function widget( $args, $instance ) {
 		$show_comments = $instance['show_comments'];
 		$show_cats = $instance['show_cats'];
 		$show_tags = $instance['show_tags'];
+		$only_titles = $instance['only_titles'];
 		$show_full = $instance['show_full'];
 		
 		/* Before widget (defined by themes). */
@@ -72,11 +73,15 @@ function widget( $args, $instance ) {
             the_tags(__('as '), ', ', ''); ?><br />
           <?php } ?>
         </div> <!-- .post-details -->
-        <?php if ( $show_full ) { 
-          the_content(__('Read more... '));
-        } else {
-          the_excerpt(); 
-        } ?>
+        <?php if ( !$only_titles ) { ?>
+          <div style="overflow-x: auto"> <!-- for images wider than widget area -->
+            <?php if ( $show_full ) { 
+              the_content(__('Read more... '));
+            } else {
+              the_excerpt(); 
+            } ?>
+          </div>
+        <?php } ?>
       </div> <!-- .post #post-ID -->
       
       <?php $count++; }
@@ -100,6 +105,7 @@ function widget( $args, $instance ) {
 		$instance['show_comments'] = strip_tags( $new_instance['show_comments'] );
 		$instance['show_cats'] = strip_tags( $new_instance['show_cats'] );
 		$instance['show_tags'] = strip_tags( $new_instance['show_tags'] );
+		$instance['only_titles'] = strip_tags( $new_instance['only_titles'] );
 		$instance['show_full'] = strip_tags( $new_instance['show_full'] );
 		
 		return $instance;
@@ -115,6 +121,7 @@ function form( $instance ) {
       'show_comments' => false,
       'show_cats' => false,
       'show_tags' => false,
+      'only_titles' => false,
       'show_full' => false
       );
 		$instance = wp_parse_args( (array) $instance, $defaults );
@@ -134,7 +141,7 @@ function form( $instance ) {
 			<label for="<?php echo $this->get_field_id( 'show_count' ); ?>"><?php _e('Total Posts to Display:'); ?></label>
 			<input id="<?php echo $this->get_field_id( 'show_count' ); ?>" name="<?php echo $this->get_field_name( 'show_count' ); ?>" value="<?php echo $instance['show_count']; ?>" style="width:100%;" />
 		</p>
-
+		
     <p>
 			<input class="checkbox" type="checkbox" <?php checked( $instance['show_meta'], true ); ?> id="<?php echo $this->get_field_id( 'show_meta' ); ?>" name="<?php echo $this->get_field_name( 'show_meta' ); ?>" />
 			<label for="<?php echo $this->get_field_id( 'show_meta' ); ?>"><?php _e('Display Author Meta Details?'); ?></label>
@@ -155,12 +162,15 @@ function form( $instance ) {
 			<label for="<?php echo $this->get_field_id( 'show_tags' ); ?>"><?php _e('Display the Post Tags?'); ?></label>
 		</p>
 
+		<p>
+			<input class="checkbox" type="checkbox" <?php checked( $instance['only_titles'], true ); ?> id="<?php echo $this->get_field_id( 'only_titles' ); ?>" name="<?php echo $this->get_field_name( 'only_titles' ); ?>" />
+			<label for="<?php echo $this->get_field_id( 'show_full' ); ?>"><?php _e('Display only the Post Titles?'); ?></label>
+		</p>
+
     <p>
 			<input class="checkbox" type="checkbox" <?php checked( $instance['show_full'], true ); ?> id="<?php echo $this->get_field_id( 'show_full' ); ?>" name="<?php echo $this->get_field_name( 'show_full' ); ?>" />
 			<label for="<?php echo $this->get_field_id( 'show_full' ); ?>"><?php _e('Display entire Post? (defaults to Post excerpt)'); ?></label>
 		</p>
-
-
 	<?php
 	}
 }
