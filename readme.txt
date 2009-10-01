@@ -4,7 +4,7 @@ Donate link: http://buynowshop.com
 Tags: posts, category, featured, multi-widget, user-options
 Requires at least: 2.8
 Tested up to: 2.8.4
-Stable tag: 1.3
+Stable tag: 1.4
 
 Displays most recent posts from a specific featured category or categories.
 
@@ -66,6 +66,10 @@ If you wish to increase the total posts displayed by the widget you can increase
 1. The options panel.
 
 == Changelog ==
+
+= 1.4 =
+* added version control compared against $wp_version
+* added horizontal rule to option panel for clarity
 
 = 1.3 =
 * code cleanup and error trapping
