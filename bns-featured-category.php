@@ -3,7 +3,7 @@
 Plugin Name: BNS Featured Category
 Plugin URI: http://buynowshop.com/plugins/bns-featured-category/
 Description: Plugin with multi-widget functionality that displays most recent posts from specific category or categories (set with user options). Also includes user options to display: Author and meta details; comment totals; post categories; post tags; and either full post or excerpt (or any combination).  
-Version: 1.4
+Version: 1.5
 Author: Edward Caissie
 Author URI: http://edwardcaissie.com/
 */
@@ -22,6 +22,22 @@ function load_my_bns_fc_widget() {
 	register_widget( 'BNS_Featured_Category_Widget' );
 }
 
+// Begin the mess of Excerpt Length fiascoes
+function get_first_words($text, $length = 55) {
+	if (!$length)
+		return $text;
+		
+	$text = strip_tags($text);
+	$words = explode(' ', $text, $length + 1);
+	if (count($words) > $length) {
+		array_pop($words);
+		array_push($words, '...');
+		$text = implode(' ', $words);
+	}
+	return $text;
+}
+// End Excerpt Length
+
 class BNS_Featured_Category_Widget extends WP_Widget {
   
 	function BNS_Featured_Category_Widget() {
@@ -29,17 +45,18 @@ class BNS_Featured_Category_Widget extends WP_Widget {
   		$widget_ops = array('classname' => 'bns-featured-category', 'description' => __('Displays most recent posts from a specific featured category or categories.'));
   
   		/* Widget control settings. */
-  		$control_ops = array('width' => 300, 'height' => 350, 'id_base' => 'bns-featured-category');
+  		$control_ops = array('width' => 450, 'height' => 350, 'id_base' => 'bns-featured-category');
   
   		/* Create the widget. */
   		$this->WP_Widget('bns-featured-category', 'BNS Featured Category', $widget_ops, $control_ops);
   	}
-  	
+	
 	function widget( $args, $instance ) {
+		global $excerpt_text;
   		extract( $args );
   
   		/* User-selected settings. */
-  		$title = apply_filters('widget_title', $instance['title'] );
+  		$title			= apply_filters('widget_title', $instance['title'] );
   		$cat_choice		= $instance['cat_choice'];
   		$show_count		= $instance['show_count'];
   		$show_meta		= $instance['show_meta'];
@@ -48,8 +65,9 @@ class BNS_Featured_Category_Widget extends WP_Widget {
   		$show_tags		= $instance['show_tags'];
   		$only_titles	= $instance['only_titles'];
   		$show_full		= $instance['show_full'];
+		$excerpt_length	= $instance['excerpt_length'];
   		
-  		/* Before widget (defined by themes). */
+		/* Before widget (defined by themes). */
   		echo $before_widget;
 		
   		/* Title of widget (before and after defined by themes). */
@@ -82,11 +100,13 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 					</div> <!-- .post-details -->
 					<?php if ( !$only_titles ) { ?>
 						<div style="overflow-x: auto"> <!-- for images wider than widget area -->
-						<?php if ( $show_full ) { 
-							the_content();
-						} else {
-							the_excerpt(); 
-						} ?>
+							<?php if ( $show_full ) { 
+								the_content();
+							} else if (isset($instance['excerpt_length']) && $instance['excerpt_length'] > 0) {
+								echo get_first_words(get_the_content(), $instance['excerpt_length']);
+							} else {
+								the_excerpt();
+							} ?>
 						</div>
 					<?php } ?>
 				</div> <!-- .post #post-ID -->
@@ -101,7 +121,7 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 		echo $after_widget;
   	}
   
-  	function update( $new_instance, $old_instance ) {
+	function update( $new_instance, $old_instance ) {
   		$instance = $old_instance;
   
   		/* Strip tags (if needed) and update the widget settings. */
@@ -114,6 +134,7 @@ class BNS_Featured_Category_Widget extends WP_Widget {
   		$instance['show_tags']		= $new_instance['show_tags'];
   		$instance['only_titles']	= $new_instance['only_titles'];
   		$instance['show_full']		= $new_instance['show_full'];
+		$instance['excerpt_length']	= $new_instance['excerpt_length'];
   		
   		return $instance;
   	}
@@ -121,15 +142,16 @@ class BNS_Featured_Category_Widget extends WP_Widget {
     function form( $instance ) {
     	/* Set up some default widget settings. */
     	$defaults = array(
-				'title'			=> __('Featured Category'),
-				'cat_choice'	=> '1',
-				'show_count'	=> '3',
-				'show_meta'		=> false,
-				'show_comments'	=> false,
-				'show_cats'		=> false,
-				'show_tags'		=> false,
-				'only_titles'	=> false,
-				'show_full'		=> false
+				'title'				=> __('Featured Category'),
+				'cat_choice'		=> '1',
+				'show_count'		=> '3',
+				'show_meta'			=> false,
+				'show_comments'		=> false,
+				'show_cats'			=> false,
+				'show_tags'			=> false,
+				'only_titles'		=> false,
+				'show_full'			=> false,
+				'excerpt_length'	=> ''
         );
     	$instance = wp_parse_args( (array) $instance, $defaults );
 		?>
@@ -138,40 +160,52 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e('Title:'); ?></label>
   			<input id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" style="width:100%;" />
   		</p>
-  
-  		<p>
+		
+		<p>
   			<label for="<?php echo $this->get_field_id( 'cat_choice' ); ?>"><?php _e('Category IDs, separated by commas:'); ?></label>
   			<input id="<?php echo $this->get_field_id( 'cat_choice' ); ?>" name="<?php echo $this->get_field_name( 'cat_choice' ); ?>" value="<?php echo $instance['cat_choice']; ?>" style="width:100%;" />
   		</p>
-  
+		
 		<p>
 			<?php $num_posts = get_option('posts_per_page'); ?>
   			<label for="<?php echo $this->get_field_id( 'show_count' ); ?>"><?php _e('Total Posts to Display (maximum'); ?> <?php echo $num_posts . '):'; ?></label>
   			<input id="<?php echo $this->get_field_id( 'show_count' ); ?>" name="<?php echo $this->get_field_name( 'show_count' ); ?>" value="<?php echo $instance['show_count']; ?>" style="width:100%;" />
   		</p>
-  		
-		<p>
-  			<input class="checkbox" type="checkbox" <?php checked( $instance['show_meta'], true ); ?> id="<?php echo $this->get_field_id( 'show_meta' ); ?>" name="<?php echo $this->get_field_name( 'show_meta' ); ?>" />
-  			<label for="<?php echo $this->get_field_id( 'show_meta' ); ?>"><?php _e('Display Author Meta Details?'); ?></label>
-  		</p>
-  
-		<p>
-  			<input class="checkbox" type="checkbox" <?php checked( $instance['show_comments'], true ); ?> id="<?php echo $this->get_field_id( 'show_comments' ); ?>" name="<?php echo $this->get_field_name( 'show_comments' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'show_comments' ); ?>"><?php _e('Display Comment Totals?'); ?></label>
-  		</p>
-  
-		<p>
-  			<input class="checkbox" type="checkbox" <?php checked( $instance['show_cats'], true ); ?> id="<?php echo $this->get_field_id( 'show_cats' ); ?>" name="<?php echo $this->get_field_name( 'show_cats' ); ?>" />
-  			<label for="<?php echo $this->get_field_id( 'show_cats' ); ?>"><?php _e('Display the Post Categories?'); ?></label>
-  		</p>
-  
-		<p>
-  			<input class="checkbox" type="checkbox" <?php checked( $instance['show_tags'], true ); ?> id="<?php echo $this->get_field_id( 'show_tags' ); ?>" name="<?php echo $this->get_field_name( 'show_tags' ); ?>" />
-  			<label for="<?php echo $this->get_field_id( 'show_tags' ); ?>"><?php _e('Display the Post Tags?'); ?></label>
-  		</p>
+		
+		<table width="100%">
+			<tr>
+				<td>
+					<p>
+						<input class="checkbox" type="checkbox" <?php checked( $instance['show_meta'], true ); ?> id="<?php echo $this->get_field_id( 'show_meta' ); ?>" name="<?php echo $this->get_field_name( 'show_meta' ); ?>" />
+						<label for="<?php echo $this->get_field_id( 'show_meta' ); ?>"><?php _e('Display Author Meta Details?'); ?></label>
+					</p>
+				</td>
+				<td>  
+					<p>
+						<input class="checkbox" type="checkbox" <?php checked( $instance['show_comments'], true ); ?> id="<?php echo $this->get_field_id( 'show_comments' ); ?>" name="<?php echo $this->get_field_name( 'show_comments' ); ?>" />
+						<label for="<?php echo $this->get_field_id( 'show_comments' ); ?>"><?php _e('Display Comment Totals?'); ?></label>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<p>
+						<input class="checkbox" type="checkbox" <?php checked( $instance['show_cats'], true ); ?> id="<?php echo $this->get_field_id( 'show_cats' ); ?>" name="<?php echo $this->get_field_name( 'show_cats' ); ?>" />
+						<label for="<?php echo $this->get_field_id( 'show_cats' ); ?>"><?php _e('Display the Post Categories?'); ?></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						<input class="checkbox" type="checkbox" <?php checked( $instance['show_tags'], true ); ?> id="<?php echo $this->get_field_id( 'show_tags' ); ?>" name="<?php echo $this->get_field_name( 'show_tags' ); ?>" />
+						<label for="<?php echo $this->get_field_id( 'show_tags' ); ?>"><?php _e('Display the Post Tags?'); ?></label>
+					</p>
+				</td>
+			</tr>
+		</table>
 		
 		<hr /> <!-- separates meta details display from content/excerpt display options -->
-  		
+  		<p>The default is to show the excerpt, if it exists, or the first 55 words of the post as the excerpt.</p>
+		
 		<p>
   			<input class="checkbox" type="checkbox" <?php checked( $instance['only_titles'], true ); ?> id="<?php echo $this->get_field_id( 'only_titles' ); ?>" name="<?php echo $this->get_field_name( 'only_titles' ); ?>" />
   			<label for="<?php echo $this->get_field_id( 'show_full' ); ?>"><?php _e('Display only the Post Titles?'); ?></label>
@@ -179,9 +213,15 @@ class BNS_Featured_Category_Widget extends WP_Widget {
   
 		<p>
   			<input class="checkbox" type="checkbox" <?php checked( $instance['show_full'], true ); ?> id="<?php echo $this->get_field_id( 'show_full' ); ?>" name="<?php echo $this->get_field_name( 'show_full' ); ?>" />
-  			<label for="<?php echo $this->get_field_id( 'show_full' ); ?>"><?php _e('Display entire Post? (defaults to Post excerpt)'); ?></label>
+  			<label for="<?php echo $this->get_field_id( 'show_full' ); ?>"><?php _e('Display entire Post?'); ?></label>
+  		</p>
+		
+		<p>
+  			<label for="<?php echo $this->get_field_id( 'excerpt_length' ); ?>"><?php _e('Set a different value for the first quantity of words?'); ?></label>
+  			<input id="<?php echo $this->get_field_id( 'excerpt_length' ); ?>" name="<?php echo $this->get_field_name( 'excerpt_length' ); ?>" value="<?php echo $instance['excerpt_length']; ?>" style="width:100%;" />
   		</p>
 		<?php
-  	}
+  	
+	}
 }
 ?>
