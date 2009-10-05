@@ -70,6 +70,7 @@ If you wish to increase the total posts displayed by the widget you can increase
 = 1.5 =
 * added option to set the quantity of the first words of the post to display instead of the default excerpt.
 * modified description to reflect new functionality
+* slightly increased the size of option panel to better display controls
 
 = 1.4 =
 * added version control compared against $wp_version
