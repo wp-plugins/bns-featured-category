@@ -2,7 +2,7 @@
 /*
 Plugin Name: BNS Featured Category
 Plugin URI: http://buynowshop.com/plugins/bns-featured-category/
-Description: Plugin with multi-widget functionality that displays most recent posts from specific category or categories (set with user options). Also includes user options to display: Author and meta details; comment totals; post categories; post tags; and either full post or excerpt (or any combination).  
+Description: Plugin with multi-widget functionality that displays most recent posts from specific category or categories (set with user options). Also includes user options to display: Author and meta details; comment totals; post categories; post tags; and either full post, excerpt, or your choice of the amount of words (or any combination).  
 Version: 1.5
 Author: Edward Caissie
 Author URI: http://edwardcaissie.com/
@@ -217,7 +217,7 @@ class BNS_Featured_Category_Widget extends WP_Widget {
   		</p>
 		
 		<p>
-  			<label for="<?php echo $this->get_field_id( 'excerpt_length' ); ?>"><?php _e('Set a different value for the first quantity of words?'); ?></label>
+  			<label for="<?php echo $this->get_field_id( 'excerpt_length' ); ?>"><?php _e('Set your preferred value for the amount of words'); ?></label>
   			<input id="<?php echo $this->get_field_id( 'excerpt_length' ); ?>" name="<?php echo $this->get_field_name( 'excerpt_length' ); ?>" value="<?php echo $instance['excerpt_length']; ?>" style="width:100%;" />
   		</p>
 		<?php
