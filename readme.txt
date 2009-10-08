@@ -4,7 +4,7 @@ Donate link: http://buynowshop.com
 Tags: posts, category, featured, multi-widget, user-options
 Requires at least: 2.8
 Tested up to: 2.8.4
-Stable tag: 1.5
+Stable tag: 1.5.1
 
 Displays most recent posts from a specific featured category or categories.
 
@@ -66,6 +66,9 @@ If you wish to increase the total posts displayed by the widget you can increase
 1. The options panel.
 
 == Changelog ==
+
+= 1.5.1 =
+* to excerpt function name to make more unique to plugin
 
 = 1.5 =
 * added option to set the quantity of the first words of the post to display instead of the default excerpt.
