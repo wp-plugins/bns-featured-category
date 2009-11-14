@@ -4,13 +4,13 @@ Donate link: http://buynowshop.com
 Tags: posts, category, featured, multi-widget, user-options
 Requires at least: 2.8
 Tested up to: 2.9
-Stable tag: 1.6
+Stable tag: 1.6.1
 
 Displays most recent posts from a specific featured category or categories.
 
 == Description ==
 
-Plugin with multi-widget functionality that displays most recent posts from specific category or categories (set with user options). Also includes user options to display: Author and meta details; comment totals; post categories; post tags; and either full post, excerpt, or your choice of the amount of words (or any combination).
+Plugin with multi-widget functionality that displays most recent posts from specific category or categories (set with user options). Also includes user options to display: Category Description; Author and meta details; comment totals; post categories; post tags; and either full post, excerpt, or your choice of the amount of words (or any combination).
 
 == Installation ==
 
@@ -73,6 +73,9 @@ If you wish to increase the total posts displayed by the widget you can increase
 1. The options panel.
 
 == Changelog ==
+
+= 1.6.1 =
+* Minor correction to variable structure to allow for multiple instances of the plugin with independent post counts
 
 = 1.6 =
 * added option to display the description for the (first) category choice as taken directly from the Categories panel under Posts in the Dashboard

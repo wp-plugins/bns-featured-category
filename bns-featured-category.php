@@ -3,7 +3,7 @@
 Plugin Name: BNS Featured Category
 Plugin URI: http://buynowshop.com/plugins/bns-featured-category/
 Description: Plugin with multi-widget functionality that displays most recent posts from specific category or categories (set with user options). Also includes user options to display: Author and meta details; comment totals; post categories; post tags; and either full post, excerpt, or your choice of the amount of words (or any combination).  
-Version: 1.6
+Version: 1.6.1
 Author: Edward Caissie
 Author URI: http://edwardcaissie.com/
 */
@@ -66,6 +66,7 @@ class BNS_Featured_Category_Widget extends WP_Widget {
   		$only_titles  	= $instance['only_titles'];
   		$show_full		  = $instance['show_full'];
 		  $excerpt_length	= $instance['excerpt_length'];
+		  $count          = $instance['count']; /* Plugin requires counter variable to be part of its arguments?! */
   		
 		/* Before widget (defined by themes). */
   		echo $before_widget;
@@ -80,7 +81,7 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 		  echo '<div class="bnsfc-cat-desc">' . category_description() . '</div>';
 		}
 		if (have_posts()) : while (have_posts()) : the_post();
-			static $count = 0;
+			/* static $count = 0; */ /* see above */
         
 			if ($count == $show_count) {
 				break;
@@ -130,7 +131,7 @@ class BNS_Featured_Category_Widget extends WP_Widget {
   		/* Strip tags (if needed) and update the widget settings. */
   		$instance['title']          = strip_tags( $new_instance['title'] );
   		$instance['cat_choice']     = strip_tags( $new_instance['cat_choice'] );
-  		$instance['show_count']     = strip_tags( $new_instance['show_count'] );
+  		$instance['show_count']     = $new_instance['show_count'];
   		$instance['show_meta']      = $new_instance['show_meta'];
   		$instance['show_comments']	= $new_instance['show_comments'];
   		$instance['show_cats']      = $new_instance['show_cats'];
@@ -139,6 +140,7 @@ class BNS_Featured_Category_Widget extends WP_Widget {
   		$instance['only_titles']    = $new_instance['only_titles'];
   		$instance['show_full']      = $new_instance['show_full'];
 		  $instance['excerpt_length']	= $new_instance['excerpt_length'];
+		  $instance['count']          = $new_instance['count']; /* added to be able to reset count to zero for every instance of the plugin */
   		
   		return $instance;
   	}
@@ -148,6 +150,7 @@ class BNS_Featured_Category_Widget extends WP_Widget {
     	$defaults = array(
 				'title'           => __('Featured Category'),
 				'cat_choice'		  => '1',
+				'count'           => '0', /* resets count to zero as default */
 				'show_count'		  => '3',
 				'show_meta'			  => false,
 				'show_comments'	  => false,
