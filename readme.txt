@@ -4,7 +4,7 @@ Donate link: http://buynowshop.com
 Tags: posts, category, featured, multi-widget, user-options
 Requires at least: 2.8
 Tested up to: 2.9
-Stable tag: 1.6.1
+Stable tag: 1.6.2
 
 Displays most recent posts from a specific featured category or categories.
 
@@ -65,14 +65,16 @@ With the addition of the display Category Description option an additional class
 
 = Can I increase the maximum posts to display? =
 
-The maximum posts displayed by the widget is controlled by the "posts per page" setting as set under Settings | Reading.
-If you wish to increase the total posts displayed by the widget you can increase this number but it will also increase the number of posts displayed by the Loop routine(s). NB: This is still under review for future updates.
+As of version 1.6.2 the Total Posts to Display is independent of the "posts per page" setting as set under Settings | Reading.
 
 == Screenshots ==
 
 1. The options panel.
 
 == Changelog ==
+
+= 1.6.2 =
+* Total Posts to Display can now exceed the posts_per_page option value.
 
 = 1.6.1 =
 * Minor correction to variable structure to allow for multiple instances of the plugin with independent post counts
