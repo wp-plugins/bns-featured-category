@@ -3,17 +3,19 @@
 Plugin Name: BNS Featured Category
 Plugin URI: http://buynowshop.com/plugins/bns-featured-category/
 Description: Plugin with multi-widget functionality that displays most recent posts from specific category or categories (set with user options). Also includes user options to display: Author and meta details; comment totals; post categories; post tags; and either full post, excerpt, or your choice of the amount of words (or any combination).  
-Version: 1.6.2.3
+Version: 1.7
 Author: Edward Caissie
 Author URI: http://edwardcaissie.com/
 License: GPL2
 */
 
-/*  Copyright 2009, 2010  Edward Caissie  (email : edward.caissie@gmail.com)
+/*  Copyright 2009-2010  Edward Caissie  (email : edward.caissie@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License, version 2, as
-    published by the Free Software Foundation.
+    it under the terms of the GNU General Public License version 2,
+    as published by the Free Software Foundation.
+
+    You may NOT assume that you can use any other version of the GPL.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +25,9 @@ License: GPL2
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+    The license for this software can also likely be found here:
+    http://www.gnu.org/licenses/gpl-2.0.html
 */
 
 global $wp_version;
@@ -85,62 +90,64 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 		  $excerpt_length	= $instance['excerpt_length'];
 		  $count          = $instance['count']; /* Plugin requires counter variable to be part of its arguments?! */
   		
-		/* Before widget (defined by themes). */
+		  /* Before widget (defined by themes). */
   		echo $before_widget;
 		
   		/* Title of widget (before and after defined by themes). */
+  		$cat_choice_class = '';
+      $cat_choice_class = preg_replace("/[,]/","-",$cat_choice);
   		if ( $title )
-  			echo $before_title . $title . $after_title;
+  			echo $before_title . '<span class="bns-cat-class-' . $cat_choice_class . '">' . $title . '</span>' . $after_title;
 		
-		/* Display posts from widget settings. */
-		query_posts("cat=$cat_choice&posts_per_page=$show_count");
-		if ( $show_cat_desc ) {
-		  echo '<div class="bnsfc-cat-desc">' . category_description() . '</div>';
-		}
-		if (have_posts()) : while (have_posts()) : the_post();
-			/* static $count = 0; */ /* see above */
+  		/* Display posts from widget settings. */
+  		query_posts("cat=$cat_choice&posts_per_page=$show_count");
+  		if ( $show_cat_desc ) {
+  		  echo '<div class="bnsfc-cat-desc">' . category_description() . '</div>';
+  		}
+  		if (have_posts()) : while (have_posts()) : the_post();
+  			/* static $count = 0; */ /* see above */
+          
+  			if ($count == $show_count) {
+  				break;
+  			} else { ?>
+  				<div <?php post_class(); ?>>
+  					<strong><a href="<?php the_permalink() ?>" rel="bookmark" title="<?php _e('Permanent Link to'); ?> <?php the_title_attribute(); ?>"><?php the_title(); ?></a></strong>
+  					<div class="post-details">
+  						<?php if ( $show_meta ) {  
+  							_e('by '); the_author(); _e(' on '); the_time('M j, Y'); ?><br />
+  						<?php }
+  						if ( $show_comments ) {         
+  							_e('with '); comments_popup_link(__('No Comments'), __('1 Comment'), __('% Comments'), '',__('Comments Closed')); ?><br />
+  						<?php } 
+  						if ( $show_cats ) { 
+  							_e('in '); the_category(', '); ?><br />
+  						<?php }
+              if ( $show_tags ) {
+  							the_tags(__('as '), ', ', ''); ?><br />
+  						<?php } ?>
+  					</div> <!-- .post-details -->
+  					<?php if ( !$only_titles ) { ?>
+  						<div style="overflow-x: auto"> <!-- for images wider than widget area -->
+  							<?php if ( $show_full ) { 
+  								the_content();
+  							} else if (isset($instance['excerpt_length']) && $instance['excerpt_length'] > 0) {
+  								echo get_first_words_for_bns_fc(get_the_content(), $instance['excerpt_length']);
+  							} else {
+  								the_excerpt();
+  							} ?>
+  						</div>
+  					<?php } ?>
+  				</div> <!-- .post #post-ID -->
+  			
+  				<?php $count++; }
+  			endwhile;
+  			else : 
+  				_e('Yes, we have no bananas, or posts, today.');
+  			endif; 
         
-			if ($count == $show_count) {
-				break;
-			} else { ?>
-				<div <?php post_class(); ?> id="post-<?php the_ID(); ?>">
-					<strong><a href="<?php the_permalink() ?>" rel="bookmark" title="<?php _e('Permanent Link to'); ?> <?php the_title_attribute(); ?>"><?php the_title(); ?></a></strong>
-					<div class="post-details">
-						<?php if ( $show_meta ) {  
-							_e('by '); the_author(); _e(' on '); the_time('M j, Y'); ?><br />
-						<?php }
-						if ( $show_comments ) {         
-							_e('with '); comments_popup_link(__('No Comments'), __('1 Comment'), __('% Comments'), '',__('Comments Closed')); ?><br />
-						<?php } 
-						if ( $show_cats ) { 
-							_e('in '); the_category(', '); ?><br />
-						<?php }
-            if ( $show_tags ) {
-							the_tags(__('as '), ', ', ''); ?><br />
-						<?php } ?>
-					</div> <!-- .post-details -->
-					<?php if ( !$only_titles ) { ?>
-						<div style="overflow-x: auto"> <!-- for images wider than widget area -->
-							<?php if ( $show_full ) { 
-								the_content();
-							} else if (isset($instance['excerpt_length']) && $instance['excerpt_length'] > 0) {
-								echo get_first_words_for_bns_fc(get_the_content(), $instance['excerpt_length']);
-							} else {
-								the_excerpt();
-							} ?>
-						</div>
-					<?php } ?>
-				</div> <!-- .post #post-ID -->
-			
-				<?php $count++; }
-			endwhile;
-			else : 
-				_e('Yes, we have no bananas, or posts, today.');
-			endif; 
-      
-		/* After widget (defined by themes). */
-		echo $after_widget;
-  	}
+  		/* After widget (defined by themes). */
+  		echo $after_widget;
+    	}
   
 	function update( $new_instance, $old_instance ) {
   		$instance = $old_instance;
@@ -187,7 +194,7 @@ class BNS_Featured_Category_Widget extends WP_Widget {
   		</p>
 		
 		<p>
-  			<label for="<?php echo $this->get_field_id( 'cat_choice' ); ?>"><?php _e('Category IDs, separated by commas:'); ?></label>
+  			<label for="<?php echo $this->get_field_id( 'cat_choice' ); ?>"><?php _e('Category IDs, separated by commas (no spaces):'); ?></label>
   			<input id="<?php echo $this->get_field_id( 'cat_choice' ); ?>" name="<?php echo $this->get_field_name( 'cat_choice' ); ?>" value="<?php echo $instance['cat_choice']; ?>" style="width:100%;" />
   		</p>
   		
