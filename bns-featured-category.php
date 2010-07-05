@@ -3,7 +3,7 @@
 Plugin Name: BNS Featured Category
 Plugin URI: http://buynowshop.com/plugins/bns-featured-category/
 Description: Plugin with multi-widget functionality that displays most recent posts from specific category or categories (set with user options). Also includes user options to display: Author and meta details; comment totals; post categories; post tags; and either full post, excerpt, or your choice of the amount of words (or any combination).  
-Version: 1.7
+Version: 1.7.1
 Author: Edward Caissie
 Author URI: http://edwardcaissie.com/
 License: GPL2
@@ -32,8 +32,8 @@ License: GPL2
 
 global $wp_version;
 $exit_message = 'BNS Featured Category requires WordPress version 2.8 or newer. <a href="http://codex.wordpress.org/Upgrading_WordPress">Please Update!</a>';
-if (version_compare($wp_version, "2.8", "<")) {
-	exit ($exit_message);
+if ( version_compare( $wp_version, "2.8", "<" ) ) {
+	exit ( $exit_message );
 }
 
 /* Add our function to the widgets_init hook. */
@@ -45,16 +45,16 @@ function load_my_bns_fc_widget() {
 }
 
 // Begin the mess of Excerpt Length fiascoes
-function get_first_words_for_bns_fc($text, $length = 55) {
-	if (!$length)
+function get_first_words_for_bns_fc( $text, $length = 55 ) {
+	if ( !$length )
 		return $text;
 		
-	$text = strip_tags($text);
-	$words = explode(' ', $text, $length + 1);
-	if (count($words) > $length) {
-		array_pop($words);
-		array_push($words, '...');
-		$text = implode(' ', $words);
+	$text = strip_tags( $text );
+	$words = explode( ' ', $text, $length + 1 );
+	if ( count( $words ) > $length ) {
+		array_pop( $words );
+		array_push( $words, '...' );
+		$text = implode( ' ', $words );
 	}
 	return $text;
 }
@@ -64,130 +64,123 @@ class BNS_Featured_Category_Widget extends WP_Widget {
   
 	function BNS_Featured_Category_Widget() {
 		/* Widget settings. */
-  		$widget_ops = array('classname' => 'bns-featured-category', 'description' => __('Displays most recent posts from a specific featured category or categories.'));
-  
-  		/* Widget control settings. */
-  		$control_ops = array('width' => 450, 'height' => 350, 'id_base' => 'bns-featured-category');
-  
-  		/* Create the widget. */
-  		$this->WP_Widget('bns-featured-category', 'BNS Featured Category', $widget_ops, $control_ops);
+  		$widget_ops = array( 'classname' => 'bns-featured-category', 'description' => __( 'Displays most recent posts from a specific featured category or categories.' ) );
+    		/* Widget control settings. */
+  		$control_ops = array( 'width' => 450, 'height' => 350, 'id_base' => 'bns-featured-category' );
+    		/* Create the widget. */
+  		$this->WP_Widget( 'bns-featured-category', 'BNS Featured Category', $widget_ops, $control_ops );
   	}
-	
 	function widget( $args, $instance ) {
   		extract( $args );
-  
-  		/* User-selected settings. */
-  		$title    			= apply_filters('widget_title', $instance['title'] );
-  		$cat_choice 		= $instance['cat_choice'];
-  		$show_count	  	= $instance['show_count'];
-  		$show_meta		  = $instance['show_meta'];
+		/* User-selected settings. */
+  		$title		= apply_filters( 'widget_title', $instance['title'] );
+  		$cat_choice	= $instance['cat_choice'];
+  		$show_count	= $instance['show_count'];
+  		$show_meta	= $instance['show_meta'];
   		$show_comments	= $instance['show_comments'];
-  		$show_cats  		= $instance['show_cats'];
-  		$show_cat_desc  = $instance['show_cat_desc'];
-  		$show_tags  		= $instance['show_tags'];
-  		$only_titles  	= $instance['only_titles'];
-  		$show_full		  = $instance['show_full'];
-		  $excerpt_length	= $instance['excerpt_length'];
-		  $count          = $instance['count']; /* Plugin requires counter variable to be part of its arguments?! */
-  		
-		  /* Before widget (defined by themes). */
+  		$show_cats	= $instance['show_cats'];
+  		$show_cat_desc	= $instance['show_cat_desc'];
+  		$show_tags	= $instance['show_tags'];
+  		$only_titles	= $instance['only_titles'];
+  		$show_full	= $instance['show_full'];
+		$excerpt_length	= $instance['excerpt_length'];
+		$count          = $instance['count']; /* Plugin requires counter variable to be part of its arguments?! */
+		
+		/* Before widget (defined by themes). */
   		echo $before_widget;
 		
   		/* Title of widget (before and after defined by themes). */
   		$cat_choice_class = '';
-      $cat_choice_class = preg_replace("/[,]/","-",$cat_choice);
+		$cat_choice_class = preg_replace( "/[,]/", "-", $cat_choice );
   		if ( $title )
   			echo $before_title . '<span class="bns-cat-class-' . $cat_choice_class . '">' . $title . '</span>' . $after_title;
-		
-  		/* Display posts from widget settings. */
-  		query_posts("cat=$cat_choice&posts_per_page=$show_count");
+			
+		/* Display posts from widget settings. */
+		query_posts( "cat=$cat_choice&posts_per_page=$show_count" );
   		if ( $show_cat_desc ) {
-  		  echo '<div class="bnsfc-cat-desc">' . category_description() . '</div>';
+			echo '<div class="bnsfc-cat-desc">' . category_description() . '</div>';
   		}
-  		if (have_posts()) : while (have_posts()) : the_post();
-  			/* static $count = 0; */ /* see above */
-          
-  			if ($count == $show_count) {
+  		if ( have_posts() ) : while ( have_posts() ) : the_post();
+			/* static $count = 0; */ /* see above */
+			if ( $count == $show_count ) {
   				break;
   			} else { ?>
   				<div <?php post_class(); ?>>
-  					<strong><a href="<?php the_permalink() ?>" rel="bookmark" title="<?php _e('Permanent Link to'); ?> <?php the_title_attribute(); ?>"><?php the_title(); ?></a></strong>
-  					<div class="post-details">
+  					<strong><a href="<?php the_permalink() ?>" rel="bookmark" title="<?php _e( 'Permanent Link to' ); ?> <?php the_title_attribute(); ?>"><?php the_title(); ?></a></strong>
+					<div class="post-details">
   						<?php if ( $show_meta ) {  
-  							_e('by '); the_author(); _e(' on '); the_time('M j, Y'); ?><br />
+  							_e( 'by ' ); the_author(); _e( ' on ' ); the_time( 'M j, Y' ); ?><br />
   						<?php }
   						if ( $show_comments ) {         
-  							_e('with '); comments_popup_link(__('No Comments'), __('1 Comment'), __('% Comments'), '',__('Comments Closed')); ?><br />
+  							_e( 'with ' ); comments_popup_link( __( 'No Comments' ), __( '1 Comment' ), __( '% Comments' ), '', __( 'Comments Closed' ) ); ?><br />
   						<?php } 
   						if ( $show_cats ) { 
-  							_e('in '); the_category(', '); ?><br />
+  							_e( 'in ' ); the_category( ', ' ); ?><br />
   						<?php }
-              if ( $show_tags ) {
-  							the_tags(__('as '), ', ', ''); ?><br />
+						if ( $show_tags ) {
+  							the_tags( __( 'as ' ), ', ', '' ); ?><br />
   						<?php } ?>
   					</div> <!-- .post-details -->
   					<?php if ( !$only_titles ) { ?>
   						<div style="overflow-x: auto"> <!-- for images wider than widget area -->
   							<?php if ( $show_full ) { 
   								the_content();
-  							} else if (isset($instance['excerpt_length']) && $instance['excerpt_length'] > 0) {
-  								echo get_first_words_for_bns_fc(get_the_content(), $instance['excerpt_length']);
+  							} else if ( isset( $instance['excerpt_length']) && $instance['excerpt_length'] > 0 ) {
+  								echo get_first_words_for_bns_fc( get_the_content(), $instance['excerpt_length'] );
   							} else {
   								the_excerpt();
   							} ?>
   						</div>
   					<?php } ?>
   				</div> <!-- .post #post-ID -->
-  			
-  				<?php $count++; }
+				<?php $count++; }
   			endwhile;
   			else : 
-  				_e('Yes, we have no bananas, or posts, today.');
-  			endif; 
-        
+  				_e( 'Yes, we have no bananas, or posts, today.' );
+  			endif;
+			
   		/* After widget (defined by themes). */
   		echo $after_widget;
+		wp_reset_query();
     	}
   
 	function update( $new_instance, $old_instance ) {
   		$instance = $old_instance;
-  
   		/* Strip tags (if needed) and update the widget settings. */
-  		$instance['title']          = strip_tags( $new_instance['title'] );
-  		$instance['cat_choice']     = strip_tags( $new_instance['cat_choice'] );
-  		$instance['show_count']     = $new_instance['show_count'];
-  		$instance['show_meta']      = $new_instance['show_meta'];
+  		$instance['title']		= strip_tags( $new_instance['title'] );
+  		$instance['cat_choice']		= strip_tags( $new_instance['cat_choice'] );
+  		$instance['show_count']		= $new_instance['show_count'];
+  		$instance['show_meta']		= $new_instance['show_meta'];
   		$instance['show_comments']	= $new_instance['show_comments'];
-  		$instance['show_cats']      = $new_instance['show_cats'];
+  		$instance['show_cats']		= $new_instance['show_cats'];
   		$instance['show_cat_desc']	= $new_instance['show_cat_desc'];
-  		$instance['show_tags']		  = $new_instance['show_tags'];
-  		$instance['only_titles']    = $new_instance['only_titles'];
-  		$instance['show_full']      = $new_instance['show_full'];
-		  $instance['excerpt_length']	= $new_instance['excerpt_length'];
-		  $instance['count']          = $new_instance['count']; /* added to be able to reset count to zero for every instance of the plugin */
+  		$instance['show_tags']		= $new_instance['show_tags'];
+  		$instance['only_titles']	= $new_instance['only_titles'];
+  		$instance['show_full']		= $new_instance['show_full'];
+		$instance['excerpt_length']	= $new_instance['excerpt_length'];
+		$instance['count']		= $new_instance['count']; /* added to be able to reset count to zero for every instance of the plugin */
   		
   		return $instance;
   	}
   
-    function form( $instance ) {
+	function form( $instance ) {
     	/* Set up some default widget settings. */
-    	$defaults = array(
-				'title'           => __('Featured Category'),
-				'cat_choice'		  => '1',
-				'count'           => '0', /* resets count to zero as default */
-				'show_count'		  => '3',
-				'show_meta'			  => false,
-				'show_comments'	  => false,
-				'show_cats'			  => false,
-				'show_cat_desc'	  => false,
-				'show_tags'			  => false,
-				'only_titles'     => false,
-				'show_full'			  => false,
+		$defaults = array(
+				'title'			=> __( 'Featured Category' ),
+				'cat_choice'		=> '1',
+				'count'			=> '0', /* resets count to zero as default */
+				'show_count'		=> '3',
+				'show_meta'		=> false,
+				'show_comments'		=> false,
+				'show_cats'		=> false,
+				'show_cat_desc'		=> false,
+				'show_tags'		=> false,
+				'only_titles'		=> false,
+				'show_full'		=> false,
 				'excerpt_length'	=> ''
-        );
-    	$instance = wp_parse_args( (array) $instance, $defaults );
+				);
+		$instance = wp_parse_args( (array) $instance, $defaults );
 		?>
-    
 		<p>
 			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e('Title:'); ?></label>
   			<input id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" style="width:100%;" />
@@ -198,15 +191,15 @@ class BNS_Featured_Category_Widget extends WP_Widget {
   			<input id="<?php echo $this->get_field_id( 'cat_choice' ); ?>" name="<?php echo $this->get_field_name( 'cat_choice' ); ?>" value="<?php echo $instance['cat_choice']; ?>" style="width:100%;" />
   		</p>
   		
-  	<p>
-				<input class="checkbox" type="checkbox" <?php checked( (bool) $instance['show_cat_desc'], true ); ?> id="<?php echo $this->get_field_id( 'show_cat_desc' ); ?>" name="<?php echo $this->get_field_name( 'show_cat_desc' ); ?>" />
-				<label for="<?php echo $this->get_field_id( 'show_cat_desc' ); ?>"><?php _e('Show first Category choice description?'); ?></label>
+		<p>
+			<input class="checkbox" type="checkbox" <?php checked( (bool) $instance['show_cat_desc'], true ); ?> id="<?php echo $this->get_field_id( 'show_cat_desc' ); ?>" name="<?php echo $this->get_field_name( 'show_cat_desc' ); ?>" />
+			<label for="<?php echo $this->get_field_id( 'show_cat_desc' ); ?>"><?php _e('Show first Category choice description?'); ?></label>
 		</p>
 		
 		<p>
-  		<label for="<?php echo $this->get_field_id( 'show_count' ); ?>"><?php _e('Total Posts to Display:'); ?></label>
-  		<input id="<?php echo $this->get_field_id( 'show_count' ); ?>" name="<?php echo $this->get_field_name( 'show_count' ); ?>" value="<?php echo $instance['show_count']; ?>" style="width:100%;" />
-  	</p>
+			<label for="<?php echo $this->get_field_id( 'show_count' ); ?>"><?php _e('Total Posts to Display:'); ?></label>
+			<input id="<?php echo $this->get_field_id( 'show_count' ); ?>" name="<?php echo $this->get_field_name( 'show_count' ); ?>" value="<?php echo $instance['show_count']; ?>" style="width:100%;" />
+		</p>
 		
 		<table width="100%">
 			<tr>
@@ -261,3 +254,4 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 	}
 }
 ?>
+<?php /* Last Revision: Jul 5, 2010 v1.7.1 */ ?>
