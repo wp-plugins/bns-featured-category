@@ -3,7 +3,7 @@
 Plugin Name: BNS Featured Category
 Plugin URI: http://buynowshop.com/plugins/bns-featured-category/
 Description: Plugin with multi-widget functionality that displays most recent posts from specific category or categories (set with user options). Also includes user options to display: Author and meta details; comment totals; post categories; post tags; and either full post, excerpt, or your choice of the amount of words (or any combination).  
-Version: 1.8.1
+Version: 1.8.2
 Author: Edward Caissie
 Author URI: http://edwardcaissie.com/
 License: GNU General Public License v2
@@ -294,7 +294,42 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 	}
 }
 
-/* temporary removal of shortcode function */
+/* BNSFC Shortcode Start - May the Gods of programming protect us all! */
+function bnsfc_shortcode( $atts ) {
+  ob_start(); /* Get ready to capture the elusive widget output */
+  the_widget(
+    'BNS_Featured_Category_Widget',
+    $instance = shortcode_atts( array(
+				'title'           => __( 'Featured Category' ),
+				'cat_choice'      => '1',
+				'count'           => '0',
+				'show_count'      => '3',
+				'use_thumbnails'  => true,
+				// 'content_thumb'   => '100', /* Does not apply if show_full is not usable */
+				'excerpt_thumb'   => '50',
+				'show_meta'       => false,
+				'show_comments'   => false,
+				'show_cats'       => false,
+				'show_cat_desc'   => false,
+				'show_tags'       => false,
+				'only_titles'     => false,
+				// 'show_full'       => false, /* Showing the full post causes a recursive nightmare to infinity and beyond! */
+				'excerpt_length'  => ''
+				), $atts),
+		$args = array(
+        $before_widget = '',
+        $after_widget = '',
+        $before_title = '',
+        $after_title = '',
+    )
+  );
+  $bnsfc_content = ob_get_contents(); /* Get the_widget output and put into its own container */ 
+  ob_end_clean(); /* All your snipes belong to us! */
+  
+  return $bnsfc_content;
+}  
+add_shortcode( 'bnsfc', 'bnsfc_shortcode' );
+/* BNSFC Shortcode End - Say your prayers ... */
 
 ?>
-<?php /* Last Revision: Sept 20, 2010 v1.8.1 */ ?>
+<?php /* Last Revision: Sept 21, 2010 v1.8.2 */ ?>
