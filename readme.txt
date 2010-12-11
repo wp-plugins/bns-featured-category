@@ -3,8 +3,8 @@ Contributors: cais
 Donate link: http://buynowshop.com
 Tags: posts, category, featured, multi-widget, user-options
 Requires at least: 2.9
-Tested up to: 3.0.1
-Stable tag: 1.8.2
+Tested up to: 3.1
+Stable tag: 1.8.3
 
 Displays most recent posts from a specific featured category or categories.
 
@@ -116,6 +116,12 @@ As of version 1.6.2 the Total Posts to Display is independent of the "posts per 
 Please stay current with your WordPress installation, your active theme, and your plugins.
 
 == Changelog ==
+= 1.8.3 =
+* released December 11, 2010
+* Confirm compatible with WordPress 3.1 (beta)
+* Change 'the_time' to date-format option
+* Only show number of comments if not password protected
+
 = 1.8.2 =
 * released Sept 21, 2010
 * added new and improved shortcode functionality - still may be considered beta

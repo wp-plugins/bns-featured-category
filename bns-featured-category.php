@@ -3,12 +3,14 @@
 Plugin Name: BNS Featured Category
 Plugin URI: http://buynowshop.com/plugins/bns-featured-category/
 Description: Plugin with multi-widget functionality that displays most recent posts from specific category or categories (set with user options). Also includes user options to display: Author and meta details; comment totals; post categories; post tags; and either full post, excerpt, or your choice of the amount of words (or any combination).  
-Version: 1.8.2
+Version: 1.8.3
 Author: Edward Caissie
 Author URI: http://edwardcaissie.com/
 License: GNU General Public License v2
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
+
+/* Last Updated: December 12, 2010 v1.8.3 */
 
 /*  Copyright 2009-2010  Edward Caissie  (email : edward.caissie@gmail.com)
 
@@ -113,9 +115,9 @@ class BNS_Featured_Category_Widget extends WP_Widget {
   					<strong><a href="<?php the_permalink() ?>" rel="bookmark" title="<?php _e( 'Permanent Link to' ); ?> <?php the_title_attribute(); ?>"><?php the_title(); ?></a></strong>
 					<div class="post-details">
   						<?php if ( $show_meta ) {  
-  							_e( 'by ' ); the_author(); _e( ' on ' ); the_time( 'M j, Y' ); ?><br />
+  							_e( 'by ' ); the_author(); _e( ' on ' ); the_time( get_option( 'date_format' ) ); ?><br />
   						<?php }
-  						if ( $show_comments ) {         
+						  if ( ( $show_comments ) && ( ! post_password_required() ) ) {         
   							_e( 'with ' ); comments_popup_link( __( 'No Comments' ), __( '1 Comment' ), __( '% Comments' ), '', __( 'Comments Closed' ) ); ?><br />
   						<?php } 
   						if ( $show_cats ) { 
@@ -332,4 +334,4 @@ add_shortcode( 'bnsfc', 'bnsfc_shortcode' );
 /* BNSFC Shortcode End - Say your prayers ... */
 
 ?>
-<?php /* Last Revision: Sept 21, 2010 v1.8.2 */ ?>
+<?php /* Last Revision: December 11, 2010 v1.8.3 */ ?>
