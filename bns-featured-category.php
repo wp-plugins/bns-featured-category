@@ -3,14 +3,14 @@
 Plugin Name: BNS Featured Category
 Plugin URI: http://buynowshop.com/plugins/bns-featured-category/
 Description: Plugin with multi-widget functionality that displays most recent posts from specific category or categories (set with user options). Also includes user options to display: Author and meta details; comment totals; post categories; post tags; and either full post, excerpt, or your choice of the amount of words (or any combination).  
-Version: 1.8.4.1
+Version: 1.8.5
 Author: Edward Caissie
 Author URI: http://edwardcaissie.com/
 License: GNU General Public License v2
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 
-/* Last Updated: April 5, 2011 v1.8.4 */
+/* Last Updated: May 27, 2011 v1.8.5 */
 
 /*  Copyright 2009-2011  Edward Caissie  (email : edward.caissie@gmail.com)
 
@@ -40,15 +40,15 @@ if ( version_compare( $wp_version, "2.9", "<" ) ) {
 }
 
 /* Add our function to the widgets_init hook. */
-add_action( 'widgets_init', 'load_my_bns_fc_widget' );
+add_action( 'widgets_init', 'load_bnsfc_widget' );
   
 /* Function that registers our widget. */
-function load_my_bns_fc_widget() {
+function load_bnsfc_widget() {
 	register_widget( 'BNS_Featured_Category_Widget' );
 }
 
 // Begin the mess of Excerpt Length fiascoes
-function get_first_words_for_bns_fc( $text, $length = 55 ) {
+function bnsfc_first_words( $text, $length = 55 ) {
 	if ( !$length )
 		return $text;
 		
@@ -68,14 +68,15 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 	function BNS_Featured_Category_Widget() {
 		/* Widget settings. */
   		$widget_ops = array( 'classname' => 'bns-featured-category', 'description' => __( 'Displays most recent posts from a specific featured category or categories.' ) );
-    		/* Widget control settings. */
+    /* Widget control settings. */
   		$control_ops = array( 'width' => 450, 'height' => 350, 'id_base' => 'bns-featured-category' );
-    		/* Create the widget. */
+    /* Create the widget. */
   		$this->WP_Widget( 'bns-featured-category', 'BNS Featured Category', $widget_ops, $control_ops );
   	}
 	function widget( $args, $instance ) {
   		extract( $args );
-		  /* User-selected settings. */
+  		
+		/* User-selected settings. */
   		$title          = apply_filters( 'widget_title', $instance['title'] );
   		$cat_choice     = $instance['cat_choice'];
   		$use_current    = $instance['use_current'];
@@ -93,16 +94,16 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 		  $excerpt_length	= $instance['excerpt_length'];
 		  $count          = $instance['count']; /* Plugin requires counter variable to be part of its arguments?! */
 		
-		  /* Before widget (defined by themes). */
+		/* Before widget (defined by themes). */
   		echo $before_widget;
 		
-  		/* Title of widget (before and after defined by themes). */
+  	/* Title of widget (before and after defined by themes). */
   		$cat_choice_class = '';
 		  $cat_choice_class = preg_replace( "/[,]/", "-", $cat_choice );
   		if ( $title )
   			echo $before_title . '<span class="bns-cat-class-' . $cat_choice_class . '">' . $title . '</span>' . $after_title;
 			
-		  /* Display posts from widget settings. */
+		/* Display posts from widget settings. */
 		  if ( is_single() && $use_current ){
 		    $cat_choices = wp_get_post_categories( get_the_ID() );
 		    $cat_choice = $cat_choices[0];
@@ -120,14 +121,14 @@ class BNS_Featured_Category_Widget extends WP_Widget {
   				<div <?php post_class(); ?>>
   					<strong><a href="<?php the_permalink() ?>" rel="bookmark" title="<?php _e( 'Permanent Link to' ); ?> <?php the_title_attribute(); ?>"><?php the_title(); ?></a></strong>
 					<div class="post-details">
-  						<?php if ( $show_meta ) {  
-  							_e( 'by ' ); the_author(); _e( ' on ' ); the_time( get_option( 'date_format' ) ); ?><br />
+  						<?php if ( $show_meta ) {
+                printf( __( 'by %1$s on %2$s' ), get_the_author(), get_the_time( get_option( 'date_format' ) ) ); ?><br />
   						<?php }
-						  if ( ( $show_comments ) && ( ! post_password_required() ) ) {         
-  							_e( 'with ' ); comments_popup_link( __( 'No Comments' ), __( '1 Comment' ), __( '% Comments' ), '', __( 'Comments Closed' ) ); ?><br />
+						  if ( ( $show_comments ) && ( ! post_password_required() ) ) {
+                comments_popup_link( __( 'with No Comments' ), __( 'with 1 Comment' ), __( 'with % Comments' ), '', __( 'with Comments Closed' ) ); ?><br />
   						<?php } 
-  						if ( $show_cats ) { 
-  							_e( 'in ' ); the_category( ', ' ); ?><br />
+  						if ( $show_cats ) {
+                printf( __( 'in %s' ), get_the_category_list( ', ' ) ); ?><br />
   						<?php }
 						if ( $show_tags ) {
   							the_tags( __( 'as ' ), ', ', '' ); ?><br />
@@ -144,7 +145,7 @@ class BNS_Featured_Category_Widget extends WP_Widget {
                   if ( has_post_thumbnail() && ( $use_thumbnails ) ) {
                     the_post_thumbnail( array( $excerpt_thumb, $excerpt_thumb ) , array( 'class' => 'alignleft' ) );
                   }  							
-  								echo get_first_words_for_bns_fc( get_the_content(), $instance['excerpt_length'] );
+  								echo bnsfc_first_words( get_the_content(), $instance['excerpt_length'] );
   							} else {
                   if ( has_post_thumbnail() && ( $use_thumbnails ) ) {
                     the_post_thumbnail( array( $excerpt_thumb, $excerpt_thumb ) , array( 'class' => 'alignleft' ) );
@@ -160,14 +161,15 @@ class BNS_Featured_Category_Widget extends WP_Widget {
   				_e( 'Yes, we have no bananas, or posts, today.' );
   			endif;
 			
-  		/* After widget (defined by themes). */
+  	/* After widget (defined by themes). */
   		echo $after_widget;
 		  wp_reset_query();
     	}
   
 	function update( $new_instance, $old_instance ) {
   		$instance = $old_instance;
-  		/* Strip tags (if needed) and update the widget settings. */
+  		
+  	/* Strip tags (if needed) and update the widget settings. */
   		$instance['title']          = strip_tags( $new_instance['title'] );
   		$instance['cat_choice']     = strip_tags( $new_instance['cat_choice'] );
   		$instance['use_current']    = $new_instance['use_current'];
@@ -189,7 +191,7 @@ class BNS_Featured_Category_Widget extends WP_Widget {
   }
   
 	function form( $instance ) {
-    	/* Set up some default widget settings. */
+    /* Set up some default widget settings. */
       $defaults = array(
 				'title'           => __( 'Featured Category' ),
 				'cat_choice'      => '1',
@@ -311,41 +313,41 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 
 /* BNSFC Shortcode Start - May the Gods of programming protect us all! */
 function bnsfc_shortcode( $atts ) {
-  ob_start(); /* Get ready to capture the elusive widget output */
-  the_widget(
-    'BNS_Featured_Category_Widget',
-    $instance = shortcode_atts( array(
-				'title'           => __( 'Featured Category' ),
-				'cat_choice'      => '1',
-				'use_current'     => false,
-				'count'           => '0',
-				'show_count'      => '3',
-				'use_thumbnails'  => true,
-				// 'content_thumb'   => '100', /* Does not apply if show_full is not usable */
-				'excerpt_thumb'   => '50',
-				'show_meta'       => false,
-				'show_comments'   => false,
-				'show_cats'       => false,
-				'show_cat_desc'   => false,
-				'show_tags'       => false,
-				'only_titles'     => false,
-				// 'show_full'       => false, /* Showing the full post causes a recursive nightmare to infinity and beyond! */
-				'excerpt_length'  => ''
-				), $atts),
-		$args = array(
-        $before_widget = '',
-        $after_widget = '',
-        $before_title = '',
-        $after_title = '',
-    )
-  );
-  $bnsfc_content = ob_get_contents(); /* Get the_widget output and put into its own container */ 
-  ob_end_clean(); /* All your snipes belong to us! */
-  
-  return $bnsfc_content;
+    ob_start(); /* Get ready to capture the elusive widget output */
+    the_widget(
+      'BNS_Featured_Category_Widget',
+      $instance = shortcode_atts( array(
+  				'title'           => __( 'Featured Category' ),
+  				'cat_choice'      => '1',
+  				'use_current'     => false,
+  				'count'           => '0',
+  				'show_count'      => '3',
+  				'use_thumbnails'  => true,
+  				// 'content_thumb'   => '100', /* Does not apply if show_full is not usable */
+  				'excerpt_thumb'   => '50',
+  				'show_meta'       => false,
+  				'show_comments'   => false,
+  				'show_cats'       => false,
+  				'show_cat_desc'   => false,
+  				'show_tags'       => false,
+  				'only_titles'     => false,
+  				// 'show_full'       => false, /* Showing the full post causes a recursive nightmare to infinity and beyond! */
+  				'excerpt_length'  => ''
+  				), $atts),
+  		$args = array(
+          $before_widget = '',
+          $after_widget = '',
+          $before_title = '',
+          $after_title = '',
+      )
+    );
+    $bnsfc_content = ob_get_contents(); /* Get the_widget output and put into its own container */
+    ob_end_clean(); /* All your snipes belong to us! */
+
+    return $bnsfc_content;
 }  
 add_shortcode( 'bnsfc', 'bnsfc_shortcode' );
 /* BNSFC Shortcode End - Say your prayers ... */
 
 ?>
-<?php /* Last Revision: April 5, 2011 v1.8.4 */ ?>
+<?php /* Last Revision: May 27, 2011 v1.8.5 */ ?>

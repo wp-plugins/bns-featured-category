@@ -3,8 +3,8 @@ Contributors: cais
 Donate link: http://buynowshop.com
 Tags: posts, category, featured, multi-widget, user-options
 Requires at least: 2.9
-Tested up to: 3.1.1
-Stable tag: 1.8.4.1
+Tested up to: 3.2
+Stable tag: 1.8.5
 
 Displays most recent posts from a specific featured category or categories.
 
@@ -20,6 +20,7 @@ This section describes how to install the plugin and get it working.
 2. Activate through the 'Plugins' menu.
 3. Place the BNS Featured Category widget appropriately in the Appearance | Widgets section of the dashboard.
 4. Set options to personal preferences:
+
 * Widget Title
 * Categories - separated by commas
 * Show (first) Category Description (checkbox)
@@ -37,6 +38,7 @@ This section describes how to install the plugin and get it working.
 5. Activate through the 'Plugins' menu.
 6. Place the BNS Featured Category widget appropriately in the Appearance | Widgets section of the dashboard.
 7. Set options to personal preferences:
+
 * Widget Title
 * Categories - separated by commas
 * Show (first) Category Description (checkbox)
@@ -50,6 +52,7 @@ Reading this article for further assistance: http://wpfirstaid.com/2009/12/plugi
 ----
 = Shortcode: bnsfc =
 Parameters are very similar to the plugin:
+
 *   'title'           => '',
 *   'cat_choice'      => '1'
 *   'use_current'     => false
@@ -112,12 +115,21 @@ As of version 1.6.2 the Total Posts to Display is independent of the "posts per 
 
   The license for this software can also likely be found here:
   http://www.gnu.org/licenses/gpl-2.0.html
+  
+* Please note, support may be available on the WordPress Support forums; but, it may be faster to visit http://buynowshop.com/plugins/bns-featured-category/ and leave a comment with the issue you are experiencing.
 
 == Upgrade Notice ==
 Please stay current with your WordPress installation, your active theme, and your plugins.
 
 == Changelog ==
-= 1.8.4 =
+= 1.8.5 =
+* released May 2011
+* confirmed compatible with WordPress version 3.2
+* addressed some minor items in the readme (this file)
+* cleaned up some text strings in the code
+* minor variable changes - `load_bnsfc_widget()`, `bnsfc_first_words()`
+
+= 1.8.4 / 1.8.4.1 =
 * released April 2011
 * confirmed compatible with WordPress 3.1.1
 * added option to use current category of post in single view
@@ -136,7 +148,7 @@ Please stay current with your WordPress installation, your active theme, and you
 * removed shortcode function due to error issues
 
 = 1.8 =
-* released: Sept 19, 2010
+* released Sept 19, 2010
 * increased minumim required WordPress version to 2.9
 * add post_thumbnail support
 * added experimental shortcode support - currently best used to generate the only content on a post or page
