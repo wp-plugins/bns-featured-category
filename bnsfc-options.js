@@ -1,6 +1,6 @@
 /**
  * This file is part of BNS Featured Category
- * Last revised at version 1.9.2
+ * Last revised at version 2.0
  *
  * Copyright 2009-2012  Edward Caissie  (email : edward.caissie@gmail.com)
  *
@@ -22,19 +22,17 @@
  *      51 Franklin St, Fifth Floor
  *      Boston, MA  02110-1301  USA
  */
+jQuery(document).ready(function($) {
+    // Note: $() will work as an alias for jQuery() inside of this function
+    $("p.bnsfc-display-all-posts-check input.checkbox").click(function () {
+        $(".bnsfc-all-options-open").toggleClass("bnsfc-all-options-closed");
+    });
 
-a.bnsfc-link,
-a.bnsfc-link:link,
-a.bnsfc-link:visited,
-a.bnsfc-link:hover,
-a.bnsfc-link:focus,
-a.bnsfc-link:active { font-size: 125%; text-decoration: none; }
+    $("p.bnsfc-display-thumbnail-sizes input.checkbox").click( function(){
+        $(".bnsfc-thumbnails-open").toggleClass("bnsfc-thumbnails-closed");
+    });
 
-.bnsfc-content { overflow-x: auto; }
-.bnsfc-clear { clear: both; }
-
-.post .widget.bns-featured-category,
-.post .widget.bns-featured-category h2 {
-    background: none;
-    width: 100%;
-}
+    $("p.bnsfc-excerpt-option-open-check input.checkbox").click( function(){
+        $(".bnsfc-excerpt-option-open").toggleClass("bnsfc-excerpt-option-closed");
+    });
+});

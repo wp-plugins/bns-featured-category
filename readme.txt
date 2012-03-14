@@ -3,8 +3,8 @@ Contributors: cais
 Donate link: http://buynowshop.com
 Tags: posts, category, featured, multi-widget, user-options
 Requires at least: 2.9
-Tested up to: 3.3.1
-Stable tag: 1.9.3
+Tested up to: 3.4
+Stable tag: 2.0
 
 Displays most recent posts from a specific featured category or categories.
 
@@ -112,7 +112,7 @@ As of version 1.6.2 the Total Posts to Display is independent of the "posts per 
 1. The options panel as it appears in default.
 
 == Other Notes ==
-* Copyright 2009-2011  Edward Caissie  (email : edward.caissie@gmail.com)
+* Copyright 2009-2012  Edward Caissie  (email : edward.caissie@gmail.com)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License version 2,
@@ -138,6 +138,13 @@ As of version 1.6.2 the Total Posts to Display is independent of the "posts per 
 Please stay current with your WordPress installation, your active theme, and your plugins.
 
 == Changelog ==
+= 2.0 =
+* Added `BNS_Options_Scripts_and_Styles`
+* Added inline documentation indicating what conditions will partially collapse the widget options panel
+* Added `*-toggle` variables for collapse effect
+* Added code to remove spaces (if used) when multiple categories are chosen
+* Added `current_theme_supports` check for `post-thumbnails`; no support = no thumbnail options
+
 = 1.9.3 =
 * Fixed problem with non-existent custom stylesheet (see 1.9.1)
 
