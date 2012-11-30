@@ -1,10 +1,10 @@
 === BNS Featured Category ===
 Contributors: cais
 Donate link: http://buynowshop.com
-Tags: posts, category, featured, multi-widget, user-options
+Tags: posts, category, featured, multi-widget, user-options, widget-only
 Requires at least: 2.9
-Tested up to: 3.4
-Stable tag: 2.2
+Tested up to: 3.5
+Stable tag: 2.3
 
 Displays most recent posts from a specific featured category or categories.
 
@@ -19,7 +19,7 @@ This section describes how to install the plugin and get it working.
 1. Upload `bns-featured-category.php` to the `/wp-content/plugins/` directory
 2. Activate through the 'Plugins' menu.
 3. Place the BNS Featured Category widget appropriately in the Appearance | Widgets section of the dashboard.
-4. Set options to personal preferences:
+4. Set options to personal preferences, for example:
 
 * Widget Title
 * Categories - separated by commas
@@ -37,7 +37,7 @@ This section describes how to install the plugin and get it working.
 4. Install.
 5. Activate through the 'Plugins' menu.
 6. Place the BNS Featured Category widget appropriately in the Appearance | Widgets section of the dashboard.
-7. Set options to personal preferences:
+7. Set options to personal preferences, for example:
 
 * Widget Title
 * Categories - separated by commas
@@ -66,6 +66,7 @@ Parameters are very similar to the plugin:
 *   'show_comments'     => false
 *   'show_cats'         => false
 *   'show_cat_desc'     => false
+*   'link_title'        => false
 *   'show_tags'         => false
 *   'only_titles'       => false
 *   'excerpt_length'    => ''
@@ -139,6 +140,16 @@ As of version 1.6.2 the Total Posts to Display is independent of the "posts per 
 Please stay current with your WordPress installation, your active theme, and your plugins.
 
 == Changelog ==
+= 2.3 =
+* Release November 2012
+* Add option to use widget title as link to single category archive
+* Add filters to allow modification of author and date post meta details
+* Add filters to allow modification of category list post meta details
+* Documentation updates
+* Optimize output buffer closure in shortcode function
+* Remove load_plugin_textdomain as redundant
+* Updated widget option panel screenshot
+
 = 2.2 =
 * Documentation updates
 * Corrected 'no_excerpt" label issue
