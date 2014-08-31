@@ -3,14 +3,14 @@ Contributors: cais
 Donate link: http://buynowshop.com
 Tags: posts, category, featured, multi-widget, user-options, shortcode
 Requires at least: 3.6
-Tested up to: 3.9
-Stable tag: 2.6
+Tested up to: 4.0
+Stable tag: 2.7
 
 Displays most recent posts from a specific featured category or categories.
 
 == Description ==
 
-Plugin with multi-widget functionality that displays most recent posts from specific category or categories (set with user options). Also includes user options to display: Category Description; Author and meta details; comment totals; post categories; post tags; and either full post, excerpt, or your choice of the amount of words (or any combination).
+Plugin with multi-widget functionality that displays most recent posts from specific category or categories (set with user options). Also includes user options to display: Category Description; Author and meta details; comment totals; post categories; post tags; and either full post, excerpt, or your choice of the amount of words (or any combination). Please make sure to read the latest changelog for new and modified features and options.
 
 == Installation ==
 
@@ -53,29 +53,43 @@ Read this article for further assistance: http://wpfirstaid.com/2009/12/plugin-i
 = Shortcode: bnsfc =
 Parameters are very similar to the plugin:
 
-*   'title'             => '',
-*   'cat_choice'        => '1'
-*	'display_children'	=> false
-*   'union'             => false
-*   'use_current'       => false
-*   'count'             => '0'
-*   'show_count'        => '3'
-*   'offset'            => '0'
-*   'sort_order'        => 'desc'
-*   'use_thumbnails'    => true
-*   'excerpt_thumb'     => '50'
-*   'show_meta'         => false
-*   'show_comments'     => false
-*   'show_cats'         => false
-*   'show_cat_desc'     => false
-*   'link_title'        => false
-*   'show_tags'         => false
-*   'only_titles'       => false
-*   'excerpt_length'    => ''
+* 'title'                => __( 'Featured Category', 'bns-fc' ),
+* 'cat_choice'           => '1',
+* 'display_children'     => false,
+* 'union'                => false,
+* 'use_current'          => false,
+* 'count'                => '0',
+* 'show_count'           => '3',
+* 'offset'               => '0',
+* 'sort_order'           => 'DESC',
+* 'use_thumbnails'       => true,
+* 'content_thumb'        => '100',
+* 'excerpt_thumb'        => '50',
+* 'show_meta'            => false,
+* 'show_comments'        => false,
+* 'show_cats'            => false,
+* 'show_cat_desc'        => false,
+* 'link_title'           => false,
+* 'show_tags'            => false,
+* 'featured_image_first' => false,
+* 'only_titles'          => false,
+* 'no_titles'            => false,
+* 'show_full'            => false,
+* 'excerpt_length'       => '',
+* 'no_excerpt'           => false
 
 NB: Use the shortcode at your own risk!
 
 == Frequently Asked Questions ==
+
+= Where do I put my custom stylesheet? =
+
+You will need to use an FTP client to add the `/bns-customs/` folder under the `/wp-content/` folder, then place your `bns-custom-style.css` file in the `/bns-customs/` folder.
+
+= Why did you add the `/bns-customs/` folder? =
+
+The `/bns-customs/` folder will be used as an update safe location for all plugins I write.
+As most of these plugins use the "BNS" designator, the folder name will make it easier to locate your customizations.
 
 = Can I use this in more than one widget area? =
 
@@ -145,6 +159,17 @@ As of version 1.6.2 the Total Posts to Display is independent of the "posts per 
 Please stay current with your WordPress installation, your active theme, and your plugins.
 
 == Changelog ==
+= 2.7 =
+* Released August 2014
+* Add new constants for use with plugin path and URL functionality
+* Added CSS wrapper class to separate shortcode style elements from widget usage
+* Added new option "Featured Image First" to display before balance of post
+* Added new style enqueue statement to read from update safe folder
+* Added sanity check to ensure there are "child categories" to display
+* Fixed sort order implementation
+* Updated inline documentation
+* Updated `readme.txt`
+
 = 2.6 =
 * Released March 2014
 * Added `bnsfc-container` wrapper CSS element
