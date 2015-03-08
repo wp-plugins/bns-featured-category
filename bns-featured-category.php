@@ -3,10 +3,10 @@
 Plugin Name: BNS Featured Category
 Plugin URI: http://buynowshop.com/plugins/bns-featured-category/
 Description: Plugin with multi-widget functionality that displays most recent posts from specific category or categories (set with user options). Also includes user options to display: Category Description; Author and meta details; comment totals; post categories; post tags; and either full post, excerpt, or your choice of the amount of words (or any combination). Please make sure to read the latest changelog for new and modified features and options.
-Version: 2.7
+Version: 2.7.1
 Author: Edward Caissie
 Author URI: http://edwardcaissie.com/
-Textdomain: bns-fc
+Textdomain: bns-featured-category
 License: GNU General Public License v2
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
@@ -23,10 +23,10 @@ License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * @package     BNS_Featured_Category
  * @link        http://buynowshop.com/plugins/bns-featured-category/
  * @link        https://github.com/Cais/bns-featured-category/
- * @link        http://wordpress.org/extend/plugins/bns-featured-category/
- * @version     2.7
+ * @link        https://wordpress.org/plugins/bns-featured-category/
+ * @version     2.7.1
  * @author      Edward Caissie <edward.caissie@gmail.com>
- * @copyright   Copyright (c) 2009-2014, Edward Caissie
+ * @copyright   Copyright (c) 2009-2015, Edward Caissie
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
@@ -48,13 +48,8 @@ License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * The license for this software can also likely be found here:
  * http://www.gnu.org/licenses/gpl-2.0.html
  *
- * @version     2.6
- * @date        February 27, 2014
- * Added option to only show posts from child categories
- * Raised required version to WordPress 3.6
- *
- * @version     2.7
- * @date        August 30, 2014
+ * @version     2.7.1
+ * @date        March 8, 2015
  */
 class BNS_Featured_Category_Widget extends WP_Widget {
 
@@ -71,7 +66,7 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 		/** Widget settings. */
 		$widget_ops = array(
 			'classname'   => 'bns-featured-category',
-			'description' => __( 'Displays most recent posts from a specific featured category or categories.', 'bns-fc' )
+			'description' => __( 'Displays most recent posts from a specific featured category or categories.', 'bns-featured-category' )
 		);
 
 		/** Widget control settings. */
@@ -93,17 +88,14 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 		if ( version_compare( $wp_version, "3.6", "<" ) ) {
 			exit ( $exit_message );
 		}
-		/** End if */
 
 		/** Define location for BNS plugin customizations */
 		if ( ! defined( 'BNS_CUSTOM_PATH' ) ) {
 			define( 'BNS_CUSTOM_PATH', WP_CONTENT_DIR . '/bns-customs/' );
 		}
-		/** End if - not defined */
 		if ( ! defined( 'BNS_CUSTOM_URL' ) ) {
 			define( 'BNS_CUSTOM_URL', content_url( '/bns-customs/' ) );
 		}
-		/** End if - not defined */
 
 		/** Enqueue Scripts and Styles for front-facing views */
 		add_action(
@@ -130,12 +122,12 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 		/** Add Plugin Row Meta details */
 		add_filter(
 			'plugin_row_meta', array(
-				$this,
-				'bnsfc_plugin_meta'
-			), 10, 2
+			$this,
+			'bnsfc_plugin_meta'
+		), 10, 2
 		);
 
-	} /** End function - construct */
+	}
 
 
 	/**
@@ -228,7 +220,6 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 		} else {
 			$multiple_cats = false;
 		}
-		/** End if - string position */
 
 		/** Widget $title, $before_widget, and $after_widget defined by theme */
 		if ( $title ) {
@@ -241,9 +232,7 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 			} else {
 				echo $before_title . '<span class="bnsfc-widget-title bnsfc-cat-class-' . $cat_choice_class . '">' . $title . '</span>' . $after_title;
 			}
-			/** End if - link title */
 		}
-		/** End if - title */
 
 		/** Display posts from widget settings */
 		/**
@@ -254,7 +243,6 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 			$cat_choices = wp_get_post_categories( get_the_ID() );
 			$cat_choice  = $cat_choices[0];
 		}
-		/** End if - is single and use current */
 
 		/** @var array $query_args - holds query arguments to be passed */
 		$query_args = array(
@@ -288,16 +276,13 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 					$child_category_list[] = $child_category->term_id;
 
 				}
-				/** End foreach - child categories */
 
 				/** @var array $query_args - re-assembled query arguments to use for child only option */
 				$query_args = array_merge( $query_args, array( 'cat' => implode( ',', $child_category_list ) ) );
 
 			}
-			/** End if - not empty child categories */
 
 		}
-		/** End if - display children (only) */
 
 		/**
 		 * Check if $sort_order is set to rand (random) and use the `orderby`
@@ -308,7 +293,6 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 		} else {
 			$query_args = array_merge( $query_args, array( 'order' => $sort_order ) );
 		}
-		/** End if - set query argument parameter */
 
 		/**
 		 * Check if post need to be in *all* categories and make necessary
@@ -326,14 +310,13 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 
 			/** Sanity testing? - Change strings to integer values */
 			foreach ( $cat_choice_union AS $index => $value ) {
-				$cat_choice_union[$index] = (int) $value;
+				$cat_choice_union[ $index ] = (int) $value;
 			}
 
 			/** @var array $query_args - merged new query arguments */
 			$query_args = array_merge( $query_args, array( 'category__and' => $cat_choice_union ) );
 
 		}
-		/** End if - do we want to use a union of the categories */
 
 
 		/** @var $bnsfc_query - object of posts matching query criteria */
@@ -343,7 +326,6 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 		if ( false == $bnsfc_query ) {
 			$bnsfc_query = new WP_Query( $query_args );
 		}
-		/** End if - bnsfc query is false, use plugin arguments */
 
 		/** @var $bnsfc_output - hook test */
 		$bnsfc_output = false;
@@ -358,7 +340,6 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 			if ( $show_cat_desc ) {
 				echo '<div class="bnsfc-cat-desc">' . category_description() . '</div>';
 			}
-			/** End if - show category description */
 
 			/** Start the Loop */
 			if ( $bnsfc_query->have_posts() ) {
@@ -373,9 +354,8 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 
 						break;
 
-					} else {
+					} else { ?>
 
-						?>
 						<div <?php post_class(); ?>>
 
 							<?php if ( ! $only_titles && $featured_image_first ) { ?>
@@ -385,7 +365,7 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 									<?php /** Conditions: Theme supports post-thumbnails -and- there is a post-thumbnail -and- the option to show the post thumbnail is checked */
 									if ( current_theme_supports( 'post-thumbnails' ) && has_post_thumbnail() && ( $use_thumbnails ) ) {
 										?>
-										<a href="<?php the_permalink() ?>" rel="bookmark" title="<?php _e( 'Permanent Link to', 'bns-fc' ); ?> <?php the_title_attribute(); ?>"><?php the_post_thumbnail(
+										<a href="<?php the_permalink() ?>" rel="bookmark" title="<?php _e( 'Permanent Link to', 'bns-featured-category' ); ?> <?php the_title_attribute(); ?>"><?php the_post_thumbnail(
 												array(
 													$excerpt_thumb,
 													$excerpt_thumb
@@ -393,12 +373,12 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 											); ?>
 										</a>
 									<?php
-									} /** End if */
+									}
 									?>
 
 									<!-- Display the Post Title -->
 									<strong>
-										<a href="<?php the_permalink() ?>" rel="bookmark" title="<?php _e( 'Permanent Link to', 'bns-fc' ); ?> <?php the_title_attribute(); ?>">
+										<a href="<?php the_permalink() ?>" rel="bookmark" title="<?php _e( 'Permanent Link to', 'bns-featured-category' ); ?> <?php the_title_attribute(); ?>">
 											<?php the_title(); ?>
 										</a>
 									</strong>
@@ -408,42 +388,37 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 							<?php } ?>
 
 							<?php if ( ! $no_titles & ! $featured_image_first ) { ?>
-								<strong><a href="<?php the_permalink() ?>" rel="bookmark" title="<?php _e( 'Permanent Link to', 'bns-fc' ); ?> <?php the_title_attribute(); ?>"><?php the_title(); ?></a></strong>
+								<strong><a href="<?php the_permalink() ?>" rel="bookmark" title="<?php _e( 'Permanent Link to', 'bns-featured-category' ); ?> <?php the_title_attribute(); ?>"><?php the_title(); ?></a></strong>
 							<?php } ?>
 
 							<div class="post-details">
 
 								<?php /** Show Post Meta Data */
 								if ( $show_meta ) {
-									echo apply_filters( 'bnsfc_show_meta', sprintf( __( 'by %1$s on %2$s', 'bns-fc' ), get_the_author(), get_the_time( get_option( 'date_format' ) ) ) ); ?>
+									echo apply_filters( 'bnsfc_show_meta', sprintf( __( 'by %1$s on %2$s', 'bns-featured-category' ), get_the_author(), get_the_time( get_option( 'date_format' ) ) ) ); ?>
 									<br />
 								<?php
 								}
-								/** End if - show meta */
 
 								/** Show Comments */
 								if ( ( $show_comments ) && ( ! post_password_required() ) ) {
-									comments_popup_link( __( 'with No Comments', 'bns-fc' ), __( 'with 1 Comment', 'bns-fc' ), __( 'with % Comments', 'bns-fc' ), '', __( 'with Comments Closed', 'bns-fc' ) ); ?>
+									comments_popup_link( __( 'with No Comments', 'bns-featured-category' ), __( 'with 1 Comment', 'bns-featured-category' ), __( 'with % Comments', 'bns-featured-category' ), '', __( 'with Comments Closed', 'bns-featured-category' ) ); ?>
 									<br />
-								<?php
-								}
-								/** End if - show comments */
+								<?php }
 
 								/** Show all categories */
 								if ( $show_cats ) {
-									echo apply_filters( 'bnsfc_show_cats', sprintf( __( 'in %s', 'bns-fc' ), get_the_category_list( ', ' ) ) ); ?>
+									echo apply_filters( 'bnsfc_show_cats', sprintf( __( 'in %s', 'bns-featured-category' ), get_the_category_list( ', ' ) ) ); ?>
 									<br />
-								<?php
-								}
-								/** End if - show cats */
+								<?php }
 
 								/** Show all tags */
 								if ( $show_tags ) {
-									$show_all_tags = get_the_tag_list( __( 'as ', 'bns-fc' ), ', ', '' );
+									$show_all_tags = get_the_tag_list( __( 'as ', 'bns-featured-category' ), ', ', '' );
 									echo apply_filters( 'bnsfc_show_tags', $show_all_tags );
 									?>
 									<br />
-								<?php } /** End if - show tags */ ?>
+								<?php } ?>
 
 							</div>
 							<!-- .post-details -->
@@ -458,7 +433,7 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 										/** Conditions: Theme supports post-thumbnails -and- there is a post-thumbnail -and- the option to show the post thumbnail is checked */
 										if ( current_theme_supports( 'post-thumbnails' ) && has_post_thumbnail() && ( $use_thumbnails ) && ! $featured_image_first ) {
 											?>
-											<a href="<?php the_permalink() ?>" rel="bookmark" title="<?php _e( 'Permanent Link to', 'bns-fc' ); ?> <?php the_title_attribute(); ?>"><?php the_post_thumbnail(
+											<a href="<?php the_permalink() ?>" rel="bookmark" title="<?php _e( 'Permanent Link to', 'bns-featured-category' ); ?> <?php the_title_attribute(); ?>"><?php the_post_thumbnail(
 													array(
 														$content_thumb,
 														$content_thumb
@@ -466,7 +441,6 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 												); ?></a>
 										<?php
 										}
-										/** End if - current theme supports */
 
 										the_content(); ?>
 
@@ -474,7 +448,7 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 
 										<?php wp_link_pages(
 											array(
-												'before'         => '<p><strong>' . __( 'Pages: ', 'bns-fc' ) . '</strong>',
+												'before'         => '<p><strong>' . __( 'Pages: ', 'bns-featured-category' ) . '</strong>',
 												'after'          => '</p>',
 												'next_or_number' => 'number'
 											)
@@ -485,79 +459,66 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 
 										if ( current_theme_supports( 'post-thumbnails' ) && has_post_thumbnail() && ( $use_thumbnails ) && ! $featured_image_first ) {
 											?>
-											<a href="<?php the_permalink() ?>" rel="bookmark" title="<?php _e( 'Permanent Link to', 'bns-fc' ); ?> <?php the_title_attribute(); ?>"><?php the_post_thumbnail(
+											<a href="<?php the_permalink() ?>" rel="bookmark" title="<?php _e( 'Permanent Link to', 'bns-featured-category' ); ?> <?php the_title_attribute(); ?>"><?php the_post_thumbnail(
 													array(
 														$excerpt_thumb,
 														$excerpt_thumb
 													), array( 'class' => 'alignleft' )
 												); ?></a>
-										<?php
-										}
-										/** End if - current theme supports */
+										<?php }
 
 										echo $this->custom_excerpt( $instance['excerpt_length'] );
 
 									} /** Show excerpt */
 									elseif ( ! $instance['no_excerpt'] ) {
 
-										if ( current_theme_supports( 'post-thumbnails' ) && has_post_thumbnail() && ( $use_thumbnails ) && ! $featured_image_first ) {
-											?>
-											<a href="<?php the_permalink() ?>" rel="bookmark" title="<?php _e( 'Permanent Link to', 'bns-fc' ); ?> <?php the_title_attribute(); ?>"><?php the_post_thumbnail(
+										if ( current_theme_supports( 'post-thumbnails' ) && has_post_thumbnail() && ( $use_thumbnails ) && ! $featured_image_first ) { ?>
+											<a href="<?php the_permalink() ?>" rel="bookmark" title="<?php _e( 'Permanent Link to', 'bns-featured-category' ); ?> <?php the_title_attribute(); ?>"><?php the_post_thumbnail(
 													array(
 														$excerpt_thumb,
 														$excerpt_thumb
 													), array( 'class' => 'alignleft' )
 												); ?></a>
-										<?php
-										}
-										/** End if - current theme supports */
+										<?php }
 
 										the_excerpt();
 
 									} /** Just show the title */
 									else {
 
-										if ( current_theme_supports( 'post-thumbnails' ) && has_post_thumbnail() && ( $use_thumbnails ) && ! $featured_image_first ) {
-											?>
-											<a href="<?php the_permalink() ?>" rel="bookmark" title="<?php _e( 'Permanent Link to', 'bns-fc' ); ?> <?php the_title_attribute(); ?>"><?php the_post_thumbnail(
+										if ( current_theme_supports( 'post-thumbnails' ) && has_post_thumbnail() && ( $use_thumbnails ) && ! $featured_image_first ) { ?>
+											<a href="<?php the_permalink() ?>" rel="bookmark" title="<?php _e( 'Permanent Link to', 'bns-featured-category' ); ?> <?php the_title_attribute(); ?>"><?php the_post_thumbnail(
 													array(
 														$content_thumb,
 														$content_thumb
 													), array( 'class' => 'alignleft' )
 												); ?></a>
-										<?php
-										}
-										/** End if - current theme supports */
+										<?php }
 
-									} /** End if - show full */
-									?>
+									} ?>
 
-								</div> <!-- .bnsfc-content -->
+								</div><!-- .bnsfc-content -->
 
-							<?php } /** End if - not only titles */ ?>
+							<?php } ?>
 
-						</div> <!-- .post #post-ID -->
+						</div><!-- .post #post-ID -->
 
 						<?php $count ++;
 
 					}
-					/** End if - count */
 
 				}
-				/** End while - have posts */
 
 			} else {
 
 				/** There are no posts. Leave a filterable message */
-				apply_filters( 'bnsfc_no_posts_message', '<span class="bnsfc-no-posts-message">' . __( 'Yes, we have no bananas, or posts, today.', 'bns-fc' ) . '</span>' );
+				apply_filters( 'bnsfc_no_posts_message', '<span class="bnsfc-no-posts-message">' . __( 'Yes, we have no bananas, or posts, today.', 'bns-featured-category' ) . '</span>' );
 
 			}
-			/** End if - have posts */
 
 			echo '</div><!-- bnsfc-container -->';
 
 		}
-		/** End if - replace entire output when hook `bnsfc_output` is used */
 
 		/** @var $after_widget string - defined by theme */
 		echo $after_widget;
@@ -565,7 +526,7 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 		/** Reset post data - see $bnsfc_query object */
 		wp_reset_postdata();
 
-	} /** End function - widget */
+	}
 
 
 	/**
@@ -608,7 +569,7 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 
 		return $instance;
 
-	} /** End function - update */
+	}
 
 
 	/**
@@ -639,7 +600,7 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 	function form( $instance ) {
 		/** Set default widget settings */
 		$defaults = array(
-			'title'                => __( 'Featured Category', 'bns-fc' ),
+			'title'                => __( 'Featured Category', 'bns-featured-category' ),
 			'cat_choice'           => '1',
 			'display_children'     => false,
 			'union'                => false,
@@ -667,51 +628,51 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 		$instance = wp_parse_args( (array) $instance, $defaults );
 		?>
 		<p>
-			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'bns-fc' ); ?></label>
+			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'bns-featured-category' ); ?></label>
 			<input id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" style="width:95%;" />
 		</p>
 
 		<p>
-			<label for="<?php echo $this->get_field_id( 'cat_choice' ); ?>"><?php _e( 'Category IDs, separated by commas:', 'bns-fc' ); ?></label>
+			<label for="<?php echo $this->get_field_id( 'cat_choice' ); ?>"><?php _e( 'Category IDs, separated by commas:', 'bns-featured-category' ); ?></label>
 			<input id="<?php echo $this->get_field_id( 'cat_choice' ); ?>" name="<?php echo $this->get_field_name( 'cat_choice' ); ?>" value="<?php echo $instance['cat_choice']; ?>" style="width:95%;" />
 		</p>
 
 		<p>
 			<input class="checkbox" type="checkbox" <?php checked( (bool) $instance['display_children'], true ); ?> id="<?php echo $this->get_field_id( 'display_children' ); ?>" name="<?php echo $this->get_field_name( 'display_children' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'display_children' ); ?>"><?php _e( "<strong>ONLY</strong> show posts that are from child categories?", 'bns-fc' ); ?></label>
+			<label for="<?php echo $this->get_field_id( 'display_children' ); ?>"><?php _e( "<strong>ONLY</strong> show posts that are from child categories?", 'bns-featured-category' ); ?></label>
 		</p>
 
 		<p>
 			<input class="checkbox" type="checkbox" <?php checked( (bool) $instance['union'], true ); ?> id="<?php echo $this->get_field_id( 'union' ); ?>" name="<?php echo $this->get_field_name( 'union' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'union' ); ?>"><?php _e( "<strong>ONLY</strong> show posts that have <strong>ALL</strong> Categories?", 'bns-fc' ); ?></label>
+			<label for="<?php echo $this->get_field_id( 'union' ); ?>"><?php _e( "<strong>ONLY</strong> show posts that have <strong>ALL</strong> Categories?", 'bns-featured-category' ); ?></label>
 		</p>
 
 		<p>
 			<input class="checkbox" type="checkbox" <?php checked( (bool) $instance['show_cat_desc'], true ); ?> id="<?php echo $this->get_field_id( 'show_cat_desc' ); ?>" name="<?php echo $this->get_field_name( 'show_cat_desc' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'show_cat_desc' ); ?>"><?php _e( "Show first category's description?", 'bns-fc' ); ?></label>
+			<label for="<?php echo $this->get_field_id( 'show_cat_desc' ); ?>"><?php _e( "Show first category's description?", 'bns-featured-category' ); ?></label>
 		</p>
 
 		<p>
 			<input class="checkbox" type="checkbox" <?php checked( (bool) $instance['link_title'], true ); ?> id="<?php echo $this->get_field_id( 'link_title' ); ?>" name="<?php echo $this->get_field_name( 'link_title' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'link_title' ); ?>"><?php _e( 'Link widget title to category?<br /><strong>NB: Use a single category choice only!</strong>', 'bns-fc' ); ?></label>
+			<label for="<?php echo $this->get_field_id( 'link_title' ); ?>"><?php _e( 'Link widget title to category?<br /><strong>NB: Use a single category choice only!</strong>', 'bns-featured-category' ); ?></label>
 		</p>
 
 		<p>
 			<input class="checkbox" type="checkbox" <?php checked( (bool) $instance['use_current'], true ); ?> id="<?php echo $this->get_field_id( 'use_current' ); ?>" name="<?php echo $this->get_field_name( 'use_current' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'use_current' ); ?>"><?php _e( 'Use current category in single view?', 'bns-fc' ); ?></label>
+			<label for="<?php echo $this->get_field_id( 'use_current' ); ?>"><?php _e( 'Use current category in single view?', 'bns-featured-category' ); ?></label>
 		</p>
 
 		<table class="bnsfc-counts">
 			<tr>
 				<td>
 					<p>
-						<label for="<?php echo $this->get_field_id( 'show_count' ); ?>"><?php _e( 'Posts to Display:', 'bns-fc' ); ?></label>
+						<label for="<?php echo $this->get_field_id( 'show_count' ); ?>"><?php _e( 'Posts to Display:', 'bns-featured-category' ); ?></label>
 						<input id="<?php echo $this->get_field_id( 'show_count' ); ?>" name="<?php echo $this->get_field_name( 'show_count' ); ?>" value="<?php echo $instance['show_count']; ?>" style="width:85%;" />
 					</p>
 				</td>
 				<td>
 					<p>
-						<label for="<?php echo $this->get_field_id( 'offset' ); ?>"><?php _e( 'Posts Offset:', 'bns-fc' ); ?></label>
+						<label for="<?php echo $this->get_field_id( 'offset' ); ?>"><?php _e( 'Posts Offset:', 'bns-featured-category' ); ?></label>
 						<input id="<?php echo $this->get_field_id( 'offset' ); ?>" name="<?php echo $this->get_field_name( 'offset' ); ?>" value="<?php echo $instance['offset']; ?>" style="width:85%;" />
 					</p>
 				</td>
@@ -719,11 +680,11 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 			<tr>
 				<td>
 					<p>
-						<label for="<?php echo $this->get_field_id( 'sort_order' ); ?>"><?php _e( 'Sort Order:', 'bns-fc' ); ?></label>
+						<label for="<?php echo $this->get_field_id( 'sort_order' ); ?>"><?php _e( 'Sort Order:', 'bns-featured-category' ); ?></label>
 						<select id="<?php echo $this->get_field_id( 'sort_order' ); ?>" name="<?php echo $this->get_field_name( 'sort_order' ); ?>" class="widefat">
-							<option value="asc" <?php selected( 'asc', $instance['sort_order'], true ); ?>><?php _e( 'Ascending', 'bns-fc' ); ?></option>
-							<option value="desc" <?php selected( 'desc', $instance['sort_order'], true ); ?>><?php _e( 'Descending', 'bns-fc' ); ?></option>
-							<option value="rand" <?php selected( 'rand', $instance['sort_order'], true ); ?>><?php _e( 'Random', 'bns-fc' ); ?></option>
+							<option value="asc" <?php selected( 'asc', $instance['sort_order'], true ); ?>><?php _e( 'Ascending', 'bns-featured-category' ); ?></option>
+							<option value="desc" <?php selected( 'desc', $instance['sort_order'], true ); ?>><?php _e( 'Descending', 'bns-featured-category' ); ?></option>
+							<option value="rand" <?php selected( 'rand', $instance['sort_order'], true ); ?>><?php _e( 'Random', 'bns-featured-category' ); ?></option>
 						</select>
 					</p>
 				</td>
@@ -732,102 +693,101 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 
 		<hr />
 		<!-- The following option choices may affect the widget option panel layout -->
-		<p><?php _e( 'NB: Some options may not be available depending on which ones are selected.', 'bns-fc' ); ?></p>
+		<p><?php _e( 'NB: Some options may not be available depending on which ones are selected.', 'bns-featured-category' ); ?></p>
 
 		<p class="bnsfc-display-all-posts-check">
 			<input class="checkbox" type="checkbox" <?php checked( (bool) $instance['only_titles'], true ); ?> id="<?php echo $this->get_field_id( 'only_titles' ); ?>" name="<?php echo $this->get_field_name( 'only_titles' ); ?>" />
 			<?php $all_options_toggle = ( checked( (bool) $instance['only_titles'], true, false ) ) ? 'closed' : 'open'; ?>
-			<label for="<?php echo $this->get_field_id( 'only_titles' ); ?>"><?php _e( 'ONLY display Post Titles?', 'bns-fc' ); ?></label>
+			<label for="<?php echo $this->get_field_id( 'only_titles' ); ?>"><?php _e( 'ONLY display Post Titles?', 'bns-featured-category' ); ?></label>
 		</p>
 
 		<p class="bnsfc-all-options-<?php echo $all_options_toggle; ?> bnsfc-no-titles">
 			<input class="checkbox" type="checkbox" <?php checked( (bool) $instance['no_titles'], true ); ?> id="<?php echo $this->get_field_id( 'no_titles' ); ?>" name="<?php echo $this->get_field_name( 'no_titles' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'no_titles' ); ?>"><?php _e( 'Do NOT display Post Titles?', 'bns-fc' ); ?></label>
+			<label for="<?php echo $this->get_field_id( 'no_titles' ); ?>"><?php _e( 'Do NOT display Post Titles?', 'bns-featured-category' ); ?></label>
 		</p>
 
 		<!-- If the theme supports post-thumbnails carry on; otherwise hide the thumbnails section -->
 		<?php if ( ! current_theme_supports( 'post-thumbnails' ) ) {
 			echo '<div class="bnsfc-thumbnails-closed">';
-		} /** End if - not post thumbnails */
-		?>
+		} ?>
+
 		<p class="bnsfc-all-options-<?php echo $all_options_toggle; ?> bnsfc-display-thumbnail-sizes"><!-- Hide all options below if ONLY post titles are to be displayed -->
 			<input class="checkbox" type="checkbox" <?php checked( (bool) $instance['use_thumbnails'], true ); ?> id="<?php echo $this->get_field_id( 'use_thumbnails' ); ?>" name="<?php echo $this->get_field_name( 'use_thumbnails' ); ?>" />
 			<?php $thumbnails_toggle = ( checked( (bool) $instance['use_thumbnails'], true, false ) ) ? 'open' : 'closed'; ?>
-			<label for="<?php echo $this->get_field_id( 'use_thumbnails' ); ?>"><?php _e( 'Use Featured Image Thumbnails?', 'bns-fc' ); ?></label>
+			<label for="<?php echo $this->get_field_id( 'use_thumbnails' ); ?>"><?php _e( 'Use Featured Image Thumbnails?', 'bns-featured-category' ); ?></label>
 		</p>
 
 		<p class="bnsfc-all-options-<?php echo $all_options_toggle; ?> bnsfc-display-thumbnail-sizes"><!-- Hide all options below if ONLY post titles are to be displayed -->
 			<input class="checkbox" type="checkbox" <?php checked( (bool) $instance['featured_image_first'], true ); ?> id="<?php echo $this->get_field_id( 'featured_image_first' ); ?>" name="<?php echo $this->get_field_name( 'featured_image_first' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'featured_image_first' ); ?>"><?php _e( 'Display Featured Images before Title?', 'bns-fc' ); ?></label>
+			<label for="<?php echo $this->get_field_id( 'featured_image_first' ); ?>"><?php _e( 'Display Featured Images before Title?', 'bns-featured-category' ); ?></label>
 		</p>
 
 		<table class="bnsfc-thumbnails-<?php echo $thumbnails_toggle; ?> bnsfc-all-options-<?php echo $all_options_toggle; ?>"><!-- Hide table if featured image / thumbnails are not used -->
 			<tr>
 				<td>
 					<p>
-						<label for="<?php echo $this->get_field_id( 'content_thumb' ); ?>"><?php _e( 'Content Thumbnail Size (in px):', 'bns-fc' ); ?></label>
+						<label for="<?php echo $this->get_field_id( 'content_thumb' ); ?>"><?php _e( 'Content Thumbnail Size (in px):', 'bns-featured-category' ); ?></label>
 						<input id="<?php echo $this->get_field_id( 'content_thumb' ); ?>" name="<?php echo $this->get_field_name( 'content_thumb' ); ?>" value="<?php echo $instance['content_thumb']; ?>" style="width:85%;" />
 					</p>
 				</td>
 				<td>
 					<p>
-						<label for="<?php echo $this->get_field_id( 'excerpt_thumb' ); ?>"><?php _e( 'Excerpt Thumbnail Size (in px):', 'bns-fc' ); ?></label>
+						<label for="<?php echo $this->get_field_id( 'excerpt_thumb' ); ?>"><?php _e( 'Excerpt Thumbnail Size (in px):', 'bns-featured-category' ); ?></label>
 						<input id="<?php echo $this->get_field_id( 'excerpt_thumb' ); ?>" name="<?php echo $this->get_field_name( 'excerpt_thumb' ); ?>" value="<?php echo $instance['excerpt_thumb']; ?>" style="width:85%;" />
 					</p>
 				</td>
 			</tr>
 		</table> <!-- End table -->
+
 		<?php if ( ! current_theme_supports( 'post-thumbnails' ) ) {
 			echo '</div><!-- bnsfc-thumbnails-closed -->';
-		} /** End if - not post thumbnails */
-		?>
+		} ?>
 
 		<!-- Carry on from here if there is no thumbnail support -->
 
 		<p class="bnsfc-all-options-<?php echo $all_options_toggle; ?>">
 			<input class="checkbox" type="checkbox" <?php checked( (bool) $instance['show_meta'], true ); ?> id="<?php echo $this->get_field_id( 'show_meta' ); ?>" name="<?php echo $this->get_field_name( 'show_meta' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'show_meta' ); ?>"><?php _e( 'Display Author Meta Details?', 'bns-fc' ); ?></label>
+			<label for="<?php echo $this->get_field_id( 'show_meta' ); ?>"><?php _e( 'Display Author Meta Details?', 'bns-featured-category' ); ?></label>
 		</p>
 
 		<p class="bnsfc-all-options-<?php echo $all_options_toggle; ?>">
 			<input class="checkbox" type="checkbox" <?php checked( (bool) $instance['show_comments'], true ); ?> id="<?php echo $this->get_field_id( 'show_comments' ); ?>" name="<?php echo $this->get_field_name( 'show_comments' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'show_comments' ); ?>"><?php _e( 'Display Comment Totals?', 'bns-fc' ); ?></label>
+			<label for="<?php echo $this->get_field_id( 'show_comments' ); ?>"><?php _e( 'Display Comment Totals?', 'bns-featured-category' ); ?></label>
 		</p>
 
 		<p class="bnsfc-all-options-<?php echo $all_options_toggle; ?>">
 			<input class="checkbox" type="checkbox" <?php checked( (bool) $instance['show_cats'], true ); ?> id="<?php echo $this->get_field_id( 'show_cats' ); ?>" name="<?php echo $this->get_field_name( 'show_cats' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'show_cats' ); ?>"><?php _e( 'Display the Post Categories?', 'bns-fc' ); ?></label>
+			<label for="<?php echo $this->get_field_id( 'show_cats' ); ?>"><?php _e( 'Display the Post Categories?', 'bns-featured-category' ); ?></label>
 		</p>
 
 		<p class="bnsfc-all-options-<?php echo $all_options_toggle; ?>">
 			<input class="checkbox" type="checkbox" <?php checked( (bool) $instance['show_tags'], true ); ?> id="<?php echo $this->get_field_id( 'show_tags' ); ?>" name="<?php echo $this->get_field_name( 'show_tags' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'show_tags' ); ?>"><?php _e( 'Display the Post Tags?', 'bns-fc' ); ?></label>
+			<label for="<?php echo $this->get_field_id( 'show_tags' ); ?>"><?php _e( 'Display the Post Tags?', 'bns-featured-category' ); ?></label>
 		</p>
 
 		<p class="bnsfc-all-options-<?php echo $all_options_toggle; ?> bnsfc-excerpt-option-open-check">
 			<input class="checkbox" type="checkbox" <?php checked( (bool) $instance['show_full'], true ); ?> id="<?php echo $this->get_field_id( 'show_full' ); ?>" name="<?php echo $this->get_field_name( 'show_full' ); ?>" />
 			<?php $show_full_toggle = ( checked( (bool) $instance['show_full'], true, false ) ) ? 'closed' : 'open'; ?>
-			<label for="<?php echo $this->get_field_id( 'show_full' ); ?>"><?php _e( 'Display entire Post?', 'bns-fc' ); ?></label>
+			<label for="<?php echo $this->get_field_id( 'show_full' ); ?>"><?php _e( 'Display entire Post?', 'bns-featured-category' ); ?></label>
 		</p>
 
 		<hr />
 		<!-- Hide excerpt explanation and word count option if entire post is displayed -->
 		<p class="bnsfc-all-options-<?php echo $all_options_toggle; ?> bnsfc-excerpt-option-<?php echo $show_full_toggle; ?>">
-			<?php _e( 'The post excerpt is shown by default, if it exists; otherwise the first 55 words of the post are shown as the excerpt ...', 'bns-fc' ); ?>
+			<?php _e( 'The post excerpt is shown by default, if it exists; otherwise the first 55 words of the post are shown as the excerpt ...', 'bns-featured-category' ); ?>
 		</p>
 
 		<p class="bnsfc-all-options-<?php echo $all_options_toggle; ?> bnsfc-excerpt-option-<?php echo $show_full_toggle; ?>">
-			<label for="<?php echo $this->get_field_id( 'excerpt_length' ); ?>"><?php _e( '... or set the amount of words you want to show:', 'bns-fc' ); ?></label>
+			<label for="<?php echo $this->get_field_id( 'excerpt_length' ); ?>"><?php _e( '... or set the amount of words you want to show:', 'bns-featured-category' ); ?></label>
 			<input id="<?php echo $this->get_field_id( 'excerpt_length' ); ?>" name="<?php echo $this->get_field_name( 'excerpt_length' ); ?>" value="<?php echo $instance['excerpt_length']; ?>" style="width:95%;" />
 		</p>
 
 		<p class="bnsfc-all-options-<?php echo $all_options_toggle; ?> bnsfc-excerpt-option-<?php echo $show_full_toggle; ?>">
-			<label for="<?php echo $this->get_field_id( 'no_excerpt' ); ?>"><?php _e( '... or have no excerpt at all!', 'bns-fc' ); ?></label>
+			<label for="<?php echo $this->get_field_id( 'no_excerpt' ); ?>"><?php _e( '... or have no excerpt at all!', 'bns-featured-category' ); ?></label>
 			<input class="checkbox" type="checkbox" <?php checked( (bool) $instance['no_excerpt'], true ); ?> id="<?php echo $this->get_field_id( 'no_excerpt' ); ?>" name="<?php echo $this->get_field_name( 'no_excerpt' ); ?>" />
 		</p>
 
-	<?php
-	} /** End function - form */
+	<?php }
 
 
 	/**
@@ -876,17 +836,16 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 			$bnsfc_link = ' <strong>
                 <a class="bnsfc-link" href="' . get_permalink() . '" title="' . the_title_attribute(
 					array(
-						'before' => __( 'Permalink to: ', 'bns-fc' ),
+						'before' => __( 'Permalink to: ', 'bns-featured-category' ),
 						'after'  => '',
 						'echo'   => false
 					)
 				) . '">'
-						  . apply_filters( 'bnsfc_link', '&infin;' ) .
-						  '</a>
+			              . apply_filters( 'bnsfc_link', '&infin;' ) .
+			              '</a>
 					</strong>';
 
 		}
-		/** End if - not empty text */
 
 		/** Check if $length has a value; or, the total words is less than the $length */
 		if ( ( ! $length ) || ( count( $words ) < $length ) ) {
@@ -902,13 +861,12 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 			$text = implode( ' ', $words );
 
 		}
-		/** End if */
 
 		$text .= $bnsfc_link;
 
 		return $text;
 
-	} /** End function - custom excerpt */
+	}
 
 
 	/**
@@ -951,15 +909,13 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 		if ( is_readable( plugin_dir_path( __FILE__ ) . 'bnsfc-custom-style.css' ) ) {
 			wp_enqueue_style( 'BNSFC-Custom-Style', plugin_dir_url( __FILE__ ) . 'bnsfc-custom-style.css', array(), $bnsfc_data['Version'] . '-old', 'screen' );
 		}
-		/** End if - is readable */
 
 		/** Move to use generic folder for all "BNS" plugins to use */
 		if ( is_readable( BNS_CUSTOM_PATH . 'bnsfc-custom-style.css' ) ) {
 			wp_enqueue_style( 'BNSFC-Custom-Style', BNS_CUSTOM_URL . 'bnsfc-custom-style.css', array(), $bnsfc_data['Version'], 'screen' );
 		}
-		/** End if - is readable */
 
-	} /** End function - scripts and styles */
+	}
 
 
 	/**
@@ -1000,9 +956,8 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 		if ( is_readable( plugin_dir_path( __FILE__ ) . 'bnsfc-options-custom-style.css' ) ) {
 			wp_enqueue_style( 'BNSFC-Options-Custom-Style', plugin_dir_url( __FILE__ ) . 'bnsfc-options-custom-style.css', array(), $bnsfc_data['Version'], 'screen' );
 		}
-		/** End if - is readable */
 
-	} /** End function - options scripts and styles */
+	}
 
 
 	/**
@@ -1015,7 +970,7 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 	 */
 	function load_bnsfc_widget() {
 		register_widget( 'BNS_Featured_Category_Widget' );
-	} /** End function - load bnsfc widget */
+	}
 
 
 	/**
@@ -1061,7 +1016,7 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 			'BNS_Featured_Category_Widget',
 			$instance = shortcode_atts(
 				array(
-					'title'                => __( 'Featured Category', 'bns-fc' ),
+					'title'                => __( 'Featured Category', 'bns-featured-category' ),
 					'cat_choice'           => '1',
 					'display_children'     => false,
 					'union'                => false,
@@ -1104,7 +1059,7 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 
 		return $bnsfc_content;
 
-	} /** End function - shortcode */
+	}
 
 
 	/**
@@ -1125,7 +1080,7 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 		$plugin_data = get_plugin_data( __FILE__ );
 
 		return $plugin_data;
-	} /** End function - plugin data */
+	}
 
 
 	/**
@@ -1157,25 +1112,134 @@ class BNS_Featured_Category_Widget extends WP_Widget {
 
 			$links = array_merge(
 				$links, array(
-					'fork_link'    => '<a href="https://github.com/Cais/BNS-Featured-Category">' . __( 'Fork on GitHub', 'bns-fc' ) . '</a>',
-					'wish_link'    => '<a href="http://www.amazon.ca/registry/wishlist/2NNNE1PAQIRUL">' . __( 'Grant a wish?', 'bns-fc' ) . '</a>',
-					'support_link' => '<a href="http://wordpress.org/support/plugin/bns-featured-category">' . __( 'WordPress Support Forums', 'bns-fc' ) . '</a>'
+					'fork_link'    => '<a href="https://github.com/Cais/BNS-Featured-Category">' . __( 'Fork on GitHub', 'bns-featured-category' ) . '</a>',
+					'wish_link'    => '<a href="http://www.amazon.ca/registry/wishlist/2NNNE1PAQIRUL">' . __( 'Grant a wish?', 'bns-featured-category' ) . '</a>',
+					'support_link' => '<a href="http://wordpress.org/support/plugin/bns-featured-category">' . __( 'WordPress Support Forums', 'bns-featured-category' ) . '</a>'
 				)
 			);
 
 		}
 
-		/** End if - file is the same as plugin */
-
 		return $links;
 
 	}
-	/** End function - plugin meta */
 
 
 }
 
-/** End class extension */
-
 /** @var $bnsfc - instantiate the class */
 $bnsfc = new BNS_Featured_Category_Widget();
+
+
+/**
+ * BNS Featured Category Update Message
+ *
+ * @package BNS_Featured_Category
+ * @since   2.7.1
+ *
+ * @uses    get_transient
+ * @uses    is_wp_error
+ * @uses    set_transient
+ * @uses    wp_kses_post
+ * @uses    wp_remote_get
+ *
+ * @param $args
+ */
+function bnsfc_in_plugin_update_message( $args ) {
+
+	require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+	$bnsfc_data = get_plugin_data( __FILE__ );
+
+	$transient_name = 'bnsfc_upgrade_notice_' . $args['Version'];
+	if ( false === ( $upgrade_notice = get_transient( $transient_name ) ) ) {
+
+		/** @var string $response - get the readme.txt file from WordPress */
+		$response = wp_remote_get( 'https://plugins.svn.wordpress.org/bns-featured-category/trunk/readme.txt' );
+
+		if ( ! is_wp_error( $response ) && ! empty( $response['body'] ) ) {
+			$matches = null;
+		}
+		$regexp         = '~==\s*Changelog\s*==\s*=\s*(.*)\s*=(.*)(=\s*' . preg_quote( $bnsfc_data['Version'] ) . '\s*=|$)~Uis';
+		$upgrade_notice = '';
+
+		if ( preg_match( $regexp, $response['body'], $matches ) ) {
+			$version = trim( $matches[1] );
+			$notices = (array) preg_split( '~[\r\n]+~', trim( $matches[2] ) );
+
+			if ( version_compare( $bnsfc_data['Version'], $version, '<' ) ) {
+
+				/** @var string $upgrade_notice - start building message (inline styles) */
+				$upgrade_notice = '<style type="text/css">
+							.bnsfc_plugin_upgrade_notice { padding-top: 20px; }
+							.bnsfc_plugin_upgrade_notice ul { width: 50%; list-style: disc; margin-left: 20px; margin-top: 0; }
+							.bnsfc_plugin_upgrade_notice li { margin: 0; }
+						</style>';
+
+				/** @var string $upgrade_notice - start building message (begin block) */
+				$upgrade_notice .= '<div class="bnsfc_plugin_upgrade_notice">';
+
+				$ul = false;
+
+				foreach ( $notices as $index => $line ) {
+
+					if ( preg_match( '~^=\s*(.*)\s*=$~i', $line ) ) {
+
+						if ( $ul ) {
+							$upgrade_notice .= '</ul><div style="clear: left;"></div>';
+						}
+
+						$upgrade_notice .= '<hr/>';
+						continue;
+
+					}
+
+					/** @var string $return_value - body of message */
+					$return_value = '';
+
+					if ( preg_match( '~^\s*\*\s*~', $line ) ) {
+
+						if ( ! $ul ) {
+							$return_value = '<ul">';
+							$ul           = true;
+						}
+
+						$line = preg_replace( '~^\s*\*\s*~', '', htmlspecialchars( $line ) );
+						$return_value .= '<li style=" ' . ( $index % 2 == 0 ? 'clear: left;' : '' ) . '">' . $line . '</li>';
+
+					} else {
+
+						if ( $ul ) {
+
+							$return_value = '</ul><div style="clear: left;"></div>';
+							$return_value .= '<p>' . $line . '</p>';
+							$ul = false;
+
+						} else {
+
+							$return_value .= '<p>' . $line . '</p>';
+
+						}
+
+					}
+
+					$upgrade_notice .= wp_kses_post( preg_replace( '~\[([^\]]*)\]\(([^\)]*)\)~', '<a href="${2}">${1}</a>', $return_value ) );
+
+				}
+
+				$upgrade_notice .= '</div>';
+
+			}
+
+		}
+
+		/** Set transient - minimize calls to WordPress */
+		set_transient( $transient_name, $upgrade_notice, DAY_IN_SECONDS );
+
+	}
+
+	echo $upgrade_notice;
+
+}
+
+/** End function - in plugin update message */
+add_action( 'in_plugin_update_message-' . plugin_basename( __FILE__ ), 'bnsfc_in_plugin_update_message' );
