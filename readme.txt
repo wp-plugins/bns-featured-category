@@ -3,7 +3,7 @@ Contributors: cais
 Donate link: http://buynowshop.com
 Tags: posts, category, featured, multi-widget, user-options, shortcode
 Requires at least: 3.6
-Tested up to: 4.1.1
+Tested up to: 4.2
 Stable tag: 2.7.1
 
 Displays most recent posts from a specific featured category or categories.
